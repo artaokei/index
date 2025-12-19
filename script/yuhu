@@ -2711,6 +2711,7 @@ local SERVICES = {
     RunService = game:GetService("RunService"),
     HttpService = game:GetService("HttpService"),
     RS = game:GetService("ReplicatedStorage"),
+    LP = game:GetService("Players").LocalPlayer,
     VIM = game:GetService("VirtualInputManager"),
     PG = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"),
     Camera = workspace.CurrentCamera,
@@ -2722,6 +2723,18 @@ local LocalPlayer = SERVICES.Players.LocalPlayer;
 if not LocalPlayer.Character or not LocalPlayer.Character:WaitForChild("HumanoidRootPart") then
     local _ = LocalPlayer.CharacterAdded:Wait():WaitForChild("HumanoidRootPart");
 end;
+
+for i, connection in ipairs(getconnections(SERVICES.LP.Idled)) do
+    connection:Disable()
+end
+
+SERVICES.LP.Idled:Connect(function()
+    if VirtualUser then
+        VirtualUser:Button(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+        task.wait(1)
+        VirtualUser:Button(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+    end
+end)
 
 local MODULES = {
     Net = SERVICES.RS.Packages._Index["sleitnick_net@0.2.0"].net,
