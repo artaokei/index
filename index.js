@@ -47,6 +47,10 @@ app.get('/fishit', (req, res) => {
     serveTextFile('script/fishit', req, res);
 });
 
+app.get('/yuhu', (req, res) => {
+    serveTextFile('script/yuhu', req, res);
+});
+
 app.get('/blatant', (req, res) => {
     serveTextFile('script/blatant', req, res);
 });
