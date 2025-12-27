@@ -44,7 +44,7 @@ app.get('/dc/arthub', (req, res) => {
 });
 
 app.get('/fishit', (req, res) => {
-    serveTextFile('script/fishit', req, res);
+    serveTextFile('script/yuhu', req, res);
 });
 
 app.get('/yuhu', (req, res) => {
