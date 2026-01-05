@@ -76,7 +76,10 @@ local Remote = {
     Cancel = Modules.Net["RF/CancelFishingInputs"],
     BuyWeather = Modules.Net["RF/PurchaseWeatherEvent"],
     UpdateAuto = Modules.Net["RF/UpdateAutoFishingState"],
+    Radar = Modules.Net["RF/UpdateFishingRadar"],
     Merchant = Modules.Net["RF/PurchaseMarketItem"],
+    EquipOxygen = Modules.Net["RF/EquipOxygenTank"],
+    UnequipOxygen = Modules.Net["RF/UnequipOxygenTank"],
 
     EquipTool = Modules.Net["RE/EquipToolFromHotbar"],
     EquipItem = Modules.Net["RE/EquipItem"],
@@ -176,8 +179,13 @@ local tradeState = {
 }
 
 local tierMap = {
-    ["Common"] = 1, ["Uncommon"] = 2, ["Rare"] = 3, 
-    ["Epic"] = 4, ["Legendary"] = 5, ["Mythic"] = 6, ["SECRET"] = 7
+    ["Common"] = 1,
+    ["Uncommon"] = 2,
+    ["Rare"] = 3,
+    ["Epic"] = 4,
+    ["Legendary"] = 5,
+    ["Mythic"] = 6,
+    ["SECRET"] = 7
 }
 
 local function teleportToPlayer()
@@ -250,7 +258,10 @@ end
 
 local function startStoneTradeLoop()
     task.spawn(function()
-        if not tradeState.selectedPlayerId then tradeState.Stone.active = false return end
+        if not tradeState.selectedPlayerId then
+            tradeState.Stone.active = false
+            return
+        end
         teleportToPlayer()
         local successCount = 0
         local failCount = 0
@@ -262,10 +273,12 @@ local function startStoneTradeLoop()
                 return Remote.Trade:InvokeServer(tradeState.selectedPlayerId, targetUUID)
             end)
             if success and result then successCount = successCount + 1 else failCount = failCount + 1 end
-            _G.StoneStatusPara:SetContent(string.format("Success: %d | Fail: %d\nStatus: %s", successCount, failCount, tradeState.Stone.active and "Running..." or "Stopping..."))
+            _G.StoneStatusPara:SetContent(string.format("Success: %d | Fail: %d\nStatus: %s", successCount, failCount,
+                tradeState.Stone.active and "Running..." or "Stopping..."))
             if tradeState.Stone.active then task.wait(5.3) end
         end
-        _G.StoneStatusPara:SetContent(tradeState.Stone.active and "Finished! Total: " .. successCount or "Stopped by User.")
+        _G.StoneStatusPara:SetContent(tradeState.Stone.active and "Finished! Total: " .. successCount or
+            "Stopped by User.")
         tradeState.Stone.active = false
         task.wait(2)
         _G.StoneStatusPara:SetContent("Ready")
@@ -274,7 +287,10 @@ end
 
 local function startTradingProcess(targetList, amount, label, stateRef)
     task.spawn(function()
-        if #targetList == 0 or not tradeState.selectedPlayerId then stateRef.active = false return end
+        if #targetList == 0 or not tradeState.selectedPlayerId then
+            stateRef.active = false
+            return
+        end
         teleportToPlayer()
         local total = (amount and amount > 0) and math.min(#targetList, amount) or #targetList
         local successCount, failCount = 0, 0
@@ -530,8 +546,8 @@ local ToolsOther = Tabs.Tools:AddSection("Other Tools");
 local AutoTotem = Tabs.Auto:AddSection("Totem");
 local AutoSell = Tabs.Auto:AddSection("Sell All");
 local AutoWeather = Tabs.Auto:AddSection("Weather");
-local AutoEnchant = Tabs.Auto:AddSection("Enchants");
 local AutoMega = Tabs.Auto:AddSection("Auto Megalodon");
+local AutoEnchant = Tabs.Auto:AddSection("Enchants");
 
 local AutoTradeSetting = Tabs.Trade:AddSection("Trade Settings");
 local AutoTradeStone = Tabs.Trade:AddSection("Trade Stone");
@@ -1393,7 +1409,31 @@ ToolsPlayers:AddInput({
     end
 })
 
+ToolsPlayers:AddToggle({
+    Title = "Radar",
+    Default = false,
+    Callback = function(v)
+        pcall(function()
+            Remote.Radar:InvokeServer(v)
+        end)
+    end
+})
 
+ToolsPlayers:AddToggle({
+    Title = "Oxigen Tank",
+    Default = false,
+    Callback = function(v)
+        if v then
+            pcall(function()
+                Remote.EquipOxygen:InvokeServer(105)
+            end)
+        else
+            pcall(function()
+                Remote.UnequipOxygen:InvokeServer()
+            end)
+        end
+    end
+})
 
 -- ==============================================================
 -- ===== UI WEBHOOK
@@ -1668,12 +1708,20 @@ local function RunAutoTotemLoop()
                         Modules.Net["RE/SpawnTotem"]:FireServer(uuid)
                     end)
                     currentTotemExpiry = os.time() + TOTEM_DATA[selectedTotemName].Duration
+
                     task.spawn(function()
-                        for i = 1, 3 do
-                            task.wait(0.2)
+                        task.wait(0.5)
+                        local attempts = 0
+                        while attempts < 5 do
                             pcall(function()
-                                Modules.Net["RE/EquipToolFromHotbar"]:FireServer(1)
+                                Remote.EquipTool:FireServer(1)
                             end)
+                            local char = game.Players.LocalPlayer.Character
+                            if char and char:FindFirstChildOfClass("Tool") then
+                                break
+                            end
+                            attempts = attempts + 1
+                            task.wait(0.7)
                         end
                     end)
                 end
@@ -2062,6 +2110,8 @@ LocalPlayer.CharacterAdded:Connect(function()
     end
 end)
 
+local hasTeleported = false
+
 AutoMega:AddToggle({
     Title = "Auto Teleport Megalodon",
     Default = false,
@@ -2071,15 +2121,23 @@ AutoMega:AddToggle({
             task.spawn(function()
                 while _G.AutoMegalodon do
                     local target = ScanMegalodon()
+
                     if target then
-                        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                            player.Character:PivotTo(target.CFrame * CFrame.new(0, 15, 0))
+                        if not hasTeleported then
+                            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                                player.Character:PivotTo(target.CFrame * CFrame.new(0, 15, 0))
+                                hasTeleported = true
+                            end
                         end
-                        task.wait(5)
+                    else
+                        hasTeleported = false
                     end
+
                     task.wait(2)
                 end
             end)
+        else
+            hasTeleported = false
         end
     end
 })
@@ -2115,7 +2173,7 @@ AutoTradeSetting:AddButton({
 _G.StoneStatusPara = AutoTradeStone:AddParagraph({ Title = "Status", Content = "Select Stone" })
 AutoTradeStone:AddDropdown({
     Title = "Stone Type",
-    Options = {"Enchant Stone", "Evolved Enchant Stone"},
+    Options = { "Enchant Stone", "Evolved Enchant Stone" },
     Callback = function(v)
         tradeState.Stone.selected = v
         local list = scanInventory(function(item)
@@ -2150,7 +2208,10 @@ AutoTradeV1:AddToggle({
     Default = false,
     Callback = function(v)
         tradeState.V1.active = v
-        if v then startTradingProcess(tradeState.inventoryCache[tradeState.V1.item] or {}, tradeState.V1.amount, V1_Label, tradeState.V1) end
+        if v then
+            startTradingProcess(tradeState.inventoryCache[tradeState.V1.item] or {}, tradeState.V1.amount, V1_Label,
+                tradeState.V1)
+        end
     end
 })
 
@@ -2162,7 +2223,8 @@ AutoTradeV2:AddDropdown({
         tradeState.V2.tier = tierMap[v] or 1
         local list = scanInventory(function(item)
             local base = Modules.ItemUtil:GetItemData(item.Id)
-            return base and base.Data and (base.Data.Rarity == tradeState.V2.tier or base.Data.Tier == tradeState.V2.tier)
+            return base and base.Data and
+                (base.Data.Rarity == tradeState.V2.tier or base.Data.Tier == tradeState.V2.tier)
         end)
     end
 })
@@ -2175,7 +2237,8 @@ AutoTradeV2:AddToggle({
         if v then
             local list = scanInventory(function(item)
                 local base = Modules.ItemUtil:GetItemData(item.Id)
-                return base and base.Data and (base.Data.Rarity == tradeState.V2.tier or base.Data.Tier == tradeState.V2.tier)
+                return base and base.Data and
+                    (base.Data.Rarity == tradeState.V2.tier or base.Data.Tier == tradeState.V2.tier)
             end)
             startTradingProcess(list, tradeState.V2.amount, V2_Label, tradeState.V2)
         end
