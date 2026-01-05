@@ -29,6 +29,21 @@ local Config = {
         TargetEnchant = "",
         TargetRodUUID = nil,
         SelectedStoneId = 10
+    },
+    Auto = {
+        Favorite = {
+            Enabled = false,
+            SelectName = {},
+            SelectRarity = {},
+            SelectMutation = {},
+            NameList = {},
+            RarityList = {"Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic", "Secret"},
+            MutationList = {
+                "Albino", "Arctic Frost", "Corrupt", "Fairy Dust", "Festive", 
+                "Galaxy", "Gemstone", "Ghost", "Gold", "Holographic", 
+                "Lightning", "Midnight", "Radioactive", "Sandy", "Shiny", "Stone"
+            }
+        }
     }
 }
 
@@ -85,7 +100,8 @@ local Remote = {
     EquipItem = Modules.Net["RE/EquipItem"],
     UnequipItem = Modules.Net["RE/UnequipItem"],
     Trade = Modules.Net["RF/InitiateTrade"],
-    Altar = Modules.Net["RE/ActivateEnchantingAltar"]
+    Altar = Modules.Net["RE/ActivateEnchantingAltar"],
+    FavoriteItem = Modules.Net["RE/FavoriteItem"]
 }
 
 local function ScanMegalodon()
@@ -186,6 +202,16 @@ local tierMap = {
     ["Legendary"] = 5,
     ["Mythic"] = 6,
     ["SECRET"] = 7
+}
+
+local TierMap2 = {
+    [1] = "Common",
+    [2] = "Uncommon",
+    [3] = "Rare",
+    [4] = "Epic",
+    [5] = "Legendary",
+    [6] = "Mythic",
+    [7] = "Secret"
 }
 
 local function teleportToPlayer()
@@ -376,6 +402,85 @@ function Utils:GetRodStatus()
     return nil, "None", "None"
 end
 
+local function GetFishInfo(item)
+    local name = "Unknown"
+    local tierName = "Common"
+    local mutation = ""
+    
+    local itemData = Modules.ItemUtil:GetItemData(item.Id or item.Identifier)
+    
+    if itemData and itemData.Data then
+        name = itemData.Data.Name or name
+        local tierNum = itemData.Data.Tier or 1
+        tierName = TierMap2[tierNum] or "Common"
+    end
+
+    if item.Metadata then
+        mutation = item.Metadata.VariantId or ""
+        if item.Metadata.Shiny then 
+            mutation = "Shiny" 
+        end
+    end
+
+    return name, tierName, mutation
+end
+
+local function GetPlayerDataReplion()
+    if PlayerDataReplion then return PlayerDataReplion end
+    local s, r = pcall(function() return Modules.Replion.Client:GetReplion("Data") end)
+    if s then PlayerDataReplion = r return r end
+    return nil
+end
+
+pcall(function()
+    local itemFolder = ReplicatedStorage:FindFirstChild("Items")
+    if itemFolder then
+        for _, v in ipairs(itemFolder:GetChildren()) do
+            if v:IsA("ModuleScript") and not table.find(Config.Auto.Favorite.NameList, v.Name) then
+                table.insert(Config.Auto.Favorite.NameList, v.Name)
+            end
+        end
+    end
+    -- Mengurutkan Nama Ikan A-Z
+    table.sort(Config.Auto.Favorite.NameList)
+    -- Mengurutkan Mutasi A-Z
+    table.sort(Config.Auto.Favorite.MutationList)
+end)
+
+local function ProcessAutoFavorite()
+    if not Config.Auto.Favorite.Enabled then return end
+    
+    local replion = GetPlayerDataReplion()
+    if not replion then return end
+
+    local success, inventoryData = pcall(function() return replion:GetExpect("Inventory") end)
+    if not success or not inventoryData or not inventoryData.Items then return end
+
+    for _, item in ipairs(inventoryData.Items) do
+        if item.IsFavorite or item.Favorited or not item.UUID then continue end
+
+        local name, tierName, mutation = GetFishInfo(item)
+        local isMatch = false
+
+        if #Config.Auto.Favorite.SelectName > 0 and table.find(Config.Auto.Favorite.SelectName, name) then
+            isMatch = true
+        end
+
+        if not isMatch and #Config.Auto.Favorite.SelectRarity > 0 and table.find(Config.Auto.Favorite.SelectRarity, tierName) then
+            isMatch = true
+        end
+
+        if not isMatch and #Config.Auto.Favorite.SelectMutation > 0 and mutation ~= "" and table.find(Config.Auto.Favorite.SelectMutation, mutation) then
+            isMatch = true
+        end
+
+        if isMatch then
+            Remote.FavoriteItem:FireServer(item.UUID, true)
+            task.wait(0.05)
+        end
+    end
+end
+
 local GC = getconnections or get_signal_cons
 if GC then
     for _, v in pairs(GC(LocalPlayer.Idled)) do
@@ -547,6 +652,7 @@ local AutoTotem = Tabs.Auto:AddSection("Totem");
 local AutoSell = Tabs.Auto:AddSection("Sell All");
 local AutoWeather = Tabs.Auto:AddSection("Weather");
 local AutoMega = Tabs.Auto:AddSection("Auto Megalodon");
+local AutoFav = Tabs.Auto:AddSection("Auto Favorite");
 local AutoEnchant = Tabs.Auto:AddSection("Enchants");
 
 local AutoTradeSetting = Tabs.Trade:AddSection("Trade Settings");
@@ -2142,6 +2248,33 @@ AutoMega:AddToggle({
     end
 })
 
+AutoFav:AddDropdown({
+    Title = "Select Item Names",
+    Multi = true,
+    Options = Config.Auto.Favorite.NameList,
+    Callback = function(v) Config.Auto.Favorite.SelectName = v end
+})
+
+AutoFav:AddDropdown({
+    Title = "Select Tiers",
+    Multi = true,
+    Options = Config.Auto.Favorite.RarityList,
+    Callback = function(v) Config.Auto.Favorite.SelectRarity = v end
+})
+
+AutoFav:AddDropdown({
+    Title = "Select Mutations",
+    Multi = true,
+    Options = Config.Auto.Favorite.MutationList,
+    Callback = function(v) Config.Auto.Favorite.SelectMutation = v end
+})
+
+AutoFav:AddToggle({
+    Title = "Enable Auto Favorite",
+    Default = false,
+    Callback = function(v) Config.Auto.Favorite.Enabled = v end
+})
+
 local PlayerDrop = AutoTradeSetting:AddDropdown({
     Title = "Target Player",
     Options = {},
@@ -2248,3 +2381,11 @@ AutoTradeV2:AddToggle({
 refreshInventory()
 
 task.spawn(RefreshMerchant)
+task.spawn(function()
+    while true do
+        if Config.Auto.Favorite.Enabled then
+            pcall(ProcessAutoFavorite)
+        end
+        task.wait(3)
+    end
+end)
