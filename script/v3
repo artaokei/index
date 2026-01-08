@@ -37,10 +37,10 @@ local Config = {
             SelectRarity = {},
             SelectMutation = {},
             NameList = {},
-            RarityList = {"Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic", "Secret"},
+            RarityList = { "Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic", "Secret" },
             MutationList = {
-                "Albino", "Arctic Frost", "Corrupt", "Fairy Dust", "Festive", 
-                "Galaxy", "Gemstone", "Ghost", "Gold", "Holographic", 
+                "Albino", "Arctic Frost", "Corrupt", "Fairy Dust", "Festive",
+                "Galaxy", "Gemstone", "Ghost", "Gold", "Holographic",
                 "Lightning", "Midnight", "Radioactive", "Sandy", "Shiny", "Stone"
             }
         }
@@ -406,9 +406,9 @@ local function GetFishInfo(item)
     local name = "Unknown"
     local tierName = "Common"
     local mutation = ""
-    
+
     local itemData = Modules.ItemUtil:GetItemData(item.Id or item.Identifier)
-    
+
     if itemData and itemData.Data then
         name = itemData.Data.Name or name
         local tierNum = itemData.Data.Tier or 1
@@ -417,8 +417,8 @@ local function GetFishInfo(item)
 
     if item.Metadata then
         mutation = item.Metadata.VariantId or ""
-        if item.Metadata.Shiny then 
-            mutation = "Shiny" 
+        if item.Metadata.Shiny then
+            mutation = "Shiny"
         end
     end
 
@@ -428,7 +428,10 @@ end
 local function GetPlayerDataReplion()
     if PlayerDataReplion then return PlayerDataReplion end
     local s, r = pcall(function() return Modules.Replion.Client:GetReplion("Data") end)
-    if s then PlayerDataReplion = r return r end
+    if s then
+        PlayerDataReplion = r
+        return r
+    end
     return nil
 end
 
@@ -449,7 +452,7 @@ end)
 
 local function ProcessAutoFavorite()
     if not Config.Auto.Favorite.Enabled then return end
-    
+
     local replion = GetPlayerDataReplion()
     if not replion then return end
 
@@ -636,6 +639,7 @@ local Tabs = {
 local Info = Tabs.Main:AddSection("Information");
 
 local FishSupport = Tabs.Fishing:AddSection("Fishing Support");
+local FishLegit = Tabs.Fishing:AddSection("Fishing Legit");
 local FishInstant = Tabs.Fishing:AddSection("Fishing Instant");
 local FishBlatant = Tabs.Fishing:AddSection("Fishing Blatant");
 
@@ -699,8 +703,10 @@ FishSupport:AddToggle({
     Title = "Hide Effects",
     Default = false,
     Callback = function(v)
-        local a = workspace:FindFirstChild("CosmeticFolder");
-        if a then a:Destroy(); end;
+        if v then
+            local a = workspace:FindFirstChild("CosmeticFolder");
+            if a then a:Destroy(); end;
+        end
     end
 });
 
@@ -732,6 +738,143 @@ FishSupport:AddToggle({
         end
     end
 });
+
+-- ===== UI LEGIT FISHING
+local MouseReleaseCallback = nil
+local LegitShakeDelay = 0.05
+local DefaultLegitDelay = 0.1
+
+_G.FishMiniData = _G.FishMiniData or {}
+
+local InputControl = require(ReplicatedStorage.Modules.InputControl)
+local OldRegisterMouseReleased = InputControl.RegisterMouseReleased
+
+function InputControl.RegisterMouseReleased(self, param2, callback)
+    MouseReleaseCallback = callback
+    return OldRegisterMouseReleased(self, param2, callback)
+end
+
+function castWithBarRelease()
+    local PlayerGui = LocalPlayer.PlayerGui
+    local Camera = workspace.CurrentCamera
+    local CenterPosition = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
+
+    pcall(function()
+        Remote.Cancel:InvokeServer()
+    end)
+
+    pcall(function()
+        Modules.Fishing:RequestChargeFishingRod(CenterPosition, false)
+    end)
+
+    local ChargeBar = PlayerGui:WaitForChild("Charge"):WaitForChild("Main"):WaitForChild("CanvasGroup"):WaitForChild(
+        "Bar")
+
+    repeat
+        task.wait()
+    until ChargeBar.Size.Y.Scale > 0
+
+    local StartTime = tick()
+
+    while ChargeBar:IsDescendantOf(PlayerGui) and ChargeBar.Size.Y.Scale < 0.93 do
+        task.wait()
+        if tick() - StartTime > 2 then
+            break
+        end
+    end
+
+    if MouseReleaseCallback then
+        pcall(MouseReleaseCallback)
+    end
+end
+
+function StartLegitFishing(enabled)
+    Modules.Fishing._autoLoop = enabled
+    Modules.Fishing._autoShake = enabled
+
+    if enabled then
+        task.spawn(function()
+            pcall(function()
+                Remote.EquipTool:FireServer(1)
+            end)
+            task.wait(0.5)
+        end)
+
+        task.spawn(function()
+            local UserId = tostring(LocalPlayer.UserId)
+            local CosmeticFolder = workspace:WaitForChild("CosmeticFolder")
+
+            while Modules.Fishing._autoLoop do
+                if not CosmeticFolder:FindFirstChild(UserId) then
+                    castWithBarRelease()
+                    task.wait(0.2)
+                end
+
+                while CosmeticFolder:FindFirstChild(UserId) and Modules.Fishing._autoLoop do
+                    task.wait(0.2)
+                end
+
+                task.wait(0.2)
+            end
+        end)
+
+        local ClickEffect = LocalPlayer.PlayerGui:FindFirstChild("!!! Click Effect")
+        if ClickEffect then
+            ClickEffect.Enabled = false
+        end
+
+        task.spawn(function()
+            while Modules.Fishing._autoShake do
+                pcall(function()
+                    Modules.Fishing:RequestFishingMinigameClick()
+                end)
+                task.wait(LegitShakeDelay)
+            end
+        end)
+    else
+        local ClickEffect = LocalPlayer.PlayerGui:FindFirstChild("!!! Click Effect")
+        if ClickEffect then
+            ClickEffect.Enabled = true
+        end
+    end
+end
+
+FishLegit:AddToggle({
+    Title = "Legit Fishing",
+    Content = "",
+    Default = false,
+    Callback = function(enabled)
+        if enabled then
+            task.spawn(function()
+                pcall(function()
+                    Remote.EquipTool:FireServer(1)
+                end)
+                task.wait(0.3)
+                StartLegitFishing(enabled)
+            end)
+        else
+            StartLegitFishing(enabled)
+        end
+
+        local playerGui = LocalPlayer:WaitForChild("PlayerGui")
+        local fishingGui = playerGui:WaitForChild("Fishing"):WaitForChild("Main")
+
+        if enabled then
+            fishingGui.Visible = false
+        else
+            fishingGui.Visible = true
+        end
+    end
+})
+
+FishLegit:AddButton({
+    Title = "Manual Fix Stuck",
+    Content = "",
+    Callback = function()
+        StartLegitFishing(false)
+    end
+})
+
 
 -- ===== UI INSTANT FISHING
 FishInstant:AddToggle({
@@ -922,87 +1065,76 @@ local isBoostActive = false
 local originalLightingValues = {}
 
 local function ToggleFPSBoost(enabled)
-    isBoostActive = enabled
-    local Lighting = game:GetService("Lighting")
-    local Terrain = workspace:FindFirstChildOfClass("Terrain")
-
-    if enabled then
-        -- Simpan nilai asli sekali saja
-        if not next(originalLightingValues) then
-            originalLightingValues.GlobalShadows = Lighting.GlobalShadows
-            originalLightingValues.FogEnd = Lighting.FogEnd
-            originalLightingValues.Brightness = Lighting.Brightness
-            originalLightingValues.ClockTime = Lighting.ClockTime
-            originalLightingValues.Ambient = Lighting.Ambient
-            originalLightingValues.OutdoorAmbient = Lighting.OutdoorAmbient
+    for _, v in pairs(game:GetDescendants()) do
+        if v:IsA("BasePart") then
+            v.Material = Enum.Material.SmoothPlastic
+            v.Reflectance = 0
+            v.CastShadow = false
+            v.Transparency = v.Transparency > 0.5 and 1 or v.Transparency
+        elseif v:IsA("Decal") or v:IsA("Texture") then
+            v.Transparency = 1
+        elseif v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Explosion") then
+            v.Enabled = false
+        elseif v:IsA("Beam") or v:IsA("SpotLight") or v:IsA("PointLight") or v:IsA("SurfaceLight") then
+            v.Enabled = false
+        elseif v:IsA("ShirtGraphic") or v:IsA("Shirt") or v:IsA("Pants") then
+            v:Destroy()
         end
-
-        -- 1. VISUAL & EFEK (Hanya mematikan)
-        pcall(function()
-            for _, v in pairs(workspace:GetDescendants()) do
-                if v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Explosion") then
-                    v.Enabled = false
-                elseif v:IsA("Beam") or v:IsA("Light") then
-                    v.Enabled = false
-                elseif v:IsA("Decal") or v:IsA("Texture") then
-                    v.Transparency = 1
-                end
-            end
-        end)
-
-        -- 2. LIGHTING & ENVIRONMENT (Pengaturan Minimalis)
-        pcall(function()
-            for _, effect in pairs(Lighting:GetChildren()) do
-                if effect:IsA("PostEffect") then effect.Enabled = false end
-            end
-            Lighting.GlobalShadows = false
-            Lighting.FogEnd = 9e9
-            Lighting.Brightness = 0 -- Lebih gelap/kontras untuk efisiensi
-            Lighting.ClockTime = 14 -- Siang tanpa bayangan
-            Lighting.Ambient = Color3.new(0, 0, 0)
-            Lighting.OutdoorAmbient = Color3.new(0, 0, 0)
-        end)
-
-        -- 3. TERRAIN & WATER
-        if Terrain then
-            pcall(function()
-                Terrain.WaterWaveSize = 0
-                Terrain.WaterWaveSpeed = 0
-                Terrain.WaterReflectance = 0
-                Terrain.WaterTransparency = 1
-                Terrain.Decoration = false
-            end)
-        end
-
-        -- 4. QUALITY & EXPLOIT TRICKS
-        pcall(function()
-            settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
-            settings().Rendering.MeshPartDetailLevel = Enum.MeshPartDetailLevel.Level01
-            settings().Rendering.TextureQuality = Enum.TextureQuality.Low
-        end)
-
-        if type(setfpscap) == "function" then pcall(function() setfpscap(100) end) end
-        arthub("Maximum FPS mode enabled (Minimal Graphics).")
-    else
-        -- RESET
-        pcall(function()
-            if originalLightingValues.GlobalShadows ~= nil then
-                Lighting.GlobalShadows = originalLightingValues.GlobalShadows
-                Lighting.FogEnd = originalLightingValues.FogEnd
-                Lighting.Brightness = originalLightingValues.Brightness
-                Lighting.ClockTime = originalLightingValues.ClockTime
-                Lighting.Ambient = originalLightingValues.Ambient
-                Lighting.OutdoorAmbient = originalLightingValues.OutdoorAmbient
-            end
-            settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic
-
-            for _, effect in pairs(Lighting:GetChildren()) do
-                if effect:IsA("PostEffect") then effect.Enabled = true end
-            end
-        end)
-
-        if type(setfpscap) == "function" then pcall(function() setfpscap(60) end) end
     end
+
+    local Lighting = game:GetService("Lighting")
+    for _, effect in pairs(Lighting:GetChildren()) do
+        if effect:IsA("PostEffect") then
+            effect.Enabled = false
+        end
+    end
+    Lighting.GlobalShadows = false
+    Lighting.FogEnd = 9e9
+    Lighting.Brightness = 1
+    Lighting.EnvironmentDiffuseScale = 0
+    Lighting.EnvironmentSpecularScale = 0
+    Lighting.ClockTime = 12
+    Lighting.Ambient = Color3.new(1, 1, 1)
+    Lighting.OutdoorAmbient = Color3.new(1, 1, 1)
+
+    local Terrain = workspace:FindFirstChildOfClass("Terrain")
+    if Terrain then
+        Terrain.WaterWaveSize = 0
+        Terrain.WaterWaveSpeed = 0
+        Terrain.WaterReflectance = 0
+        Terrain.WaterTransparency = 1
+        Terrain.Decoration = false
+    end
+
+    settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+    settings().Rendering.MeshPartDetailLevel = Enum.MeshPartDetailLevel.Level01
+    settings().Rendering.TextureQuality = Enum.TextureQuality.Low
+
+    game:GetService("UserSettings").GameSettings.SavedQualityLevel = Enum.SavedQualitySetting.QualityLevel1
+    game:GetService("UserSettings").GameSettings.Fullscreen = true
+
+    for _, s in pairs(workspace:GetDescendants()) do
+        if s:IsA("Sound") and s.Playing and s.Volume > 0.5 then
+            s.Volume = 0.1
+        end
+    end
+
+    if collectgarbage then
+        collectgarbage("collect")
+    end
+
+    local fullWhite = Instance.new("ScreenGui")
+    fullWhite.Name = "FullWhiteScreen"
+    fullWhite.ResetOnSpawn = false
+    fullWhite.IgnoreGuiInset = true
+    fullWhite.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    fullWhite.Parent = game:GetService("CoreGui")
+
+    local whiteFrame = Instance.new("Frame")
+    whiteFrame.Size = UDim2.new(1, 0, 1, 0)
+    whiteFrame.BackgroundColor3 = Color3.new(1, 1, 1)
+    whiteFrame.BorderSizePixel = 0
+    whiteFrame.Parent = fullWhite
 end
 
 
@@ -1010,7 +1142,9 @@ ToolsBoost:AddToggle({
     Title = "Boost FPS",
     Default = false,
     Callback = function(is_active)
-        ToggleFPSBoost(is_active)
+        if is_active then
+            ToggleFPSBoost(is_active)
+        end
     end
 })
 
