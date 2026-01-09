@@ -934,17 +934,7 @@ TelePlayers:AddButton({
         arthub("Refresh Players...", 3)
     end,
     SubCallback = function()
-        if SelectPlayersTele ~= "" and player.Character then
-            pcall(function()
-                local coords = {}
-                for val in string.gmatch(SelectPlayersTele, "([^,]+)") do
-                    table.insert(coords, tonumber(val))
-                end
-                
-                local cf = CFrame.new(unpack(coords))
-                player.Character:PivotTo(cf)
-            end)
-        end
+        Teleport(SelectPlayersTele)
         arthub("Teleporting to Players...", 3)
     end
 });
