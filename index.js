@@ -64,6 +64,25 @@ app.get('/blatant', (req, res) => {
 });
 
 
+app.get('/mt-manager', (req, res) => {
+    // 1. Tentukan lokasi file APK kamu
+    const filePath = path.join(__dirname, 'apk', 'MT-Manager.apk');
+    
+    // 2. Tentukan nama file saat nanti muncul di HP/PC user (opsional)
+    const fileName = 'ArtHub-Manager.apk';
+
+    // 3. Gunakan fungsi res.download
+    res.download(filePath, fileName, (err) => {
+        if (err) {
+            console.error("Gagal mendownload file:", err);
+            // Beri tahu user jika file tidak ada atau error
+            if (!res.headersSent) {
+                res.status(404).send('Maaf, file aplikasi tidak ditemukan.');
+            }
+        }
+    });
+});
+
 // app.get('/', (req, res) => {
 //     res.sendFile(path.join(__dirname, 'views', 'index.html'));
 // });
