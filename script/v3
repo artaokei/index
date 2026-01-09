@@ -99,6 +99,7 @@ local Remote = {
     UnequipOxygen = Modules.Net["RF/UnequipOxygenTank"],
 
     EquipTool = Modules.Net["RE/EquipToolFromHotbar"],
+    UnequipTool = Modules.Net["RE/UnequipToolFromHotbar"],
     EquipItem = Modules.Net["RE/EquipItem"],
     UnequipItem = Modules.Net["RE/UnequipItem"],
     Trade = Modules.Net["RF/InitiateTrade"],
@@ -2899,6 +2900,7 @@ local function Run9TotemLoop()
                     for attempt = 1, 3 do
                         pcall(function()
                             Remote.EquipTool:FireServer(1)
+                            Remote.UnequipTool:FireServer(1)
                         end)
                         task.wait(0.15)
                     end
@@ -2922,6 +2924,7 @@ local function Run9TotemLoop()
         -- Unequip oxygen tank
         pcall(function()
             Remote.UnequipOxygen:InvokeServer()
+            Remote.UnequipTool:FireServer(1)
             print("✅ Oxygen tank unequipped")
         end)
 
@@ -2936,6 +2939,7 @@ local function Run9TotemLoop()
         end
 
         print("✅ 9 Totem Formation completed")
+        
     end)
 end
 
@@ -2957,13 +2961,14 @@ local choosetot = Auto9Totem:AddDropdown({
 })
 
 totemToggle = Auto9Totem:AddToggle({
-    Title = "Spawn 9 Totem Formation",
+    Title = "Spawn 9 Totem",
     Default = false,
     Callback = function(state)
         AUTO_9_TOTEM_ACTIVE = state
 
         if state then
             print("Starting 9 Totem Formation...")
+            Remote.UnequipTool:FireServer(1)
             Run9TotemLoop()
         else
             print("Stopping 9 Totem Formation...")
@@ -3198,7 +3203,6 @@ ToolsVisual:AddButton({
     end
 })
 
--- Auto cleanup on game leave
 
 refreshInventory()
 
