@@ -1,0 +1,2468 @@
+-- ==============================================================
+-- ===== Modules
+-- ==============================================================
+-- // Services
+local Players = game:GetService("Players")
+
+-- // References
+local LocalPlayer = Players.LocalPlayer
+LocalPlayer.CameraMinZoomDistance = 0.5
+LocalPlayer.CameraMaxZoomDistance = 100
+
+local Services = {
+    Players = Players,
+    LocalPlayer = Players.LocalPlayer,
+    RunService = game:GetService("RunService"),
+    HttpService = game:GetService("HttpService"),
+    RS = game:GetService("ReplicatedStorage"),
+    VIM = game:GetService("VirtualInputManager"),
+    PG = LocalPlayer:WaitForChild("PlayerGui"),
+    Camera = workspace.CurrentCamera,
+    GuiService = game:GetService("GuiService"),
+    CoreGui = game:GetService("CoreGui")
+}
+
+local Config = {
+    Auto = {
+        Favorite = {
+            Enabled = false,
+            SelectName = {},
+            SelectRarity = {},
+            SelectMutation = {},
+            NameList = {},
+            RarityList = { "Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic", "Secret" },
+            MutationList = {
+                "Albino", "Arctic Frost", "Corrupt", "Fairy Dust", "Festive",
+                "Galaxy", "Gemstone", "Ghost", "Gold", "Holographic",
+                "Lightning", "Midnight", "Radioactive", "Sandy", "Shiny", "Stone"
+            }
+        }
+    }
+}
+
+local HdeNme = {
+    Visual = {
+        TypingSpeed = 0.2,
+        EraseSpeed = 0.1,
+        RGBFrequency = 5,
+    },
+    State = {
+        isV1Enabled = false,
+        isV2Enabled = false,
+        isRGBEnabled = false,
+        customName = "ArtHub",
+        customLevel = "999",
+        originalName = "",
+        originalLevel = "",
+        defaultWhite = Color3.fromRGB(255, 255, 254) -- Putih
+    }
+}
+
+-- // Modules
+local Modules = {
+    Net = Services.RS.Packages._Index["sleitnick_net@0.2.0"].net,
+    Replion = require(Services.RS.Packages.Replion),
+
+    -- Controllers
+    
+    InputControl          = require(Services.RS.Modules.InputControl),
+    Fishing = require(Services.RS.Controllers.FishingController),
+    Trading = require(Services.RS.Controllers.ItemTradingController),
+
+    -- Utilities
+    ItemUtil = require(Services.RS.Shared.ItemUtility),
+    StatUtil = require(Services.RS.Shared.PlayerStatsUtility)
+}
+
+-- // Remotes
+local Remote = {
+    -- Events (RE)
+    FishDone = Modules.Net["RE/FishingCompleted"],
+    NewFishNotif = Modules.Net["RE/ObtainedNewFishNotification"],
+
+    -- Functions (RF)
+    ChargeRod = Modules.Net["RF/ChargeFishingRod"],
+    StartMini = Modules.Net["RF/RequestFishingMinigameStarted"],
+    Cancel = Modules.Net["RF/CancelFishingInputs"],
+    BuyWeather = Modules.Net["RF/PurchaseWeatherEvent"],
+    UpdateAuto = Modules.Net["RF/UpdateAutoFishingState"],
+    Radar = Modules.Net["RF/UpdateFishingRadar"],
+    Merchant = Modules.Net["RF/PurchaseMarketItem"],
+    EquipOxygen = Modules.Net["RF/EquipOxygenTank"],
+    UnequipOxygen = Modules.Net["RF/UnequipOxygenTank"],
+
+    EquipTool = Modules.Net["RE/EquipToolFromHotbar"],
+    UnequipTool = Modules.Net["RE/UnequipToolFromHotbar"],
+    EquipItem = Modules.Net["RE/EquipItem"],
+    UnequipItem = Modules.Net["RE/UnequipItem"],
+    Trade = Modules.Net["RF/InitiateTrade"],
+    Altar = Modules.Net["RE/ActivateEnchantingAltar"],
+    FavoriteItem = Modules.Net["RE/FavoriteItem"]
+}
+
+-- // Data & State
+local replionPath = game:GetService("ReplicatedStorage").Packages._Index["ytrev_replion@2.0.0-rc.3"]
+local loadData = {
+    Data = Modules.Replion.Client:WaitReplion("Data"),
+    Items = Services.RS:WaitForChild("Items"),
+    PlayerStat = replionPath and require(replionPath.replion) or nil
+}
+
+local Data = Modules.Replion.Client:WaitReplion("Data")
+
+
+local TierMap2 = {
+    [1] = "Common",
+    [2] = "Uncommon",
+    [3] = "Rare",
+    [4] = "Epic",
+    [5] = "Legendary",
+    [6] = "Mythic",
+    [7] = "Secret"
+}
+
+
+local function GetFishInfo(item)
+    local name = "Unknown"
+    local tierName = "Common"
+    local mutation = ""
+
+    local itemData = Modules.ItemUtil:GetItemData(item.Id or item.Identifier)
+
+    if itemData and itemData.Data then
+        name = itemData.Data.Name or name
+        local tierNum = itemData.Data.Tier or 1
+        tierName = TierMap2[tierNum] or "Common"
+    end
+
+    if item.Metadata then
+        mutation = item.Metadata.VariantId or ""
+        if item.Metadata.Shiny then
+            mutation = "Shiny"
+        end
+    end
+
+    return name, tierName, mutation
+end
+
+local function GetPlayerDataReplion()
+    if PlayerDataReplion then return PlayerDataReplion end
+    local s, r = pcall(function() return Modules.Replion.Client:GetReplion("Data") end)
+    if s then
+        PlayerDataReplion = r
+        return r
+    end
+    return nil
+end
+
+pcall(function()
+    local itemFolder = Services.RS:FindFirstChild("Items")
+    if itemFolder then
+        for _, v in ipairs(itemFolder:GetChildren()) do
+            if v:IsA("ModuleScript") and not table.find(Config.Auto.Favorite.NameList, v.Name) then
+                table.insert(Config.Auto.Favorite.NameList, v.Name)
+            end
+        end
+    end
+    -- Mengurutkan Nama Ikan A-Z
+    table.sort(Config.Auto.Favorite.NameList)
+    -- Mengurutkan Mutasi A-Z
+    table.sort(Config.Auto.Favorite.MutationList)
+end)
+
+local function ProcessAutoFavorite()
+    if not Config.Auto.Favorite.Enabled then return end
+
+    local replion = GetPlayerDataReplion()
+    if not replion then return end
+
+    local success, inventoryData = pcall(function() return replion:GetExpect("Inventory") end)
+    if not success or not inventoryData or not inventoryData.Items then return end
+
+    for _, item in ipairs(inventoryData.Items) do
+        if item.IsFavorite or item.Favorited or not item.UUID then continue end
+
+        local name, tierName, mutation = GetFishInfo(item)
+        local isMatch = false
+
+        if #Config.Auto.Favorite.SelectName > 0 and table.find(Config.Auto.Favorite.SelectName, name) then
+            isMatch = true
+        end
+
+        if not isMatch and #Config.Auto.Favorite.SelectRarity > 0 and table.find(Config.Auto.Favorite.SelectRarity, tierName) then
+            isMatch = true
+        end
+
+        if not isMatch and #Config.Auto.Favorite.SelectMutation > 0 and mutation ~= "" and table.find(Config.Auto.Favorite.SelectMutation, mutation) then
+            isMatch = true
+        end
+
+        if isMatch then
+            Remote.FavoriteItem:FireServer(item.UUID, true)
+            task.wait(0.05)
+        end
+    end
+end
+
+local GC = getconnections or get_signal_cons
+if GC then
+    for _, v in pairs(GC(LocalPlayer.Idled)) do
+        if v.Disable then
+            v:Disable()
+        elseif v.Disconnect then
+            v:Disconnect()
+        end
+    end
+end
+local VirtualUser = cloneref and cloneref(game:GetService("VirtualUser")) or game:GetService("VirtualUser")
+LocalPlayer.Idled:Connect(function()
+    VirtualUser:CaptureController()
+    VirtualUser:ClickButton2(Vector2.new())
+end)
+
+-- ==============================================================
+-- ===== GLOBAL CONFIGURATION
+-- ==============================================================
+-- // Blatant
+_G.BlatantAtas = 1.9
+_G.BlatantBawah = 0.9
+_G.BlatantAuto = false
+_G.BlatantStatus = false
+
+-- Instant Fishing
+_G.InstantStatus = false
+
+-- Variabel Simpanan untuk Restore
+local Old_Charge = nil
+local Old_Cast = nil
+
+-- // Auto
+_G.Weather = false
+_G.Totem = false
+_G.SellAll = false
+
+
+-- ==============================================================
+-- ===== FUNCTION
+-- ==============================================================
+
+-- Format Price
+local function FormatPrice(amount)
+    if amount >= 1000000 then
+        return string.format("%.1fm", amount / 1000000):gsub("%.0m", "m")
+    elseif amount >= 1000 then
+        return string.format("%.1fk", amount / 1000):gsub("%.0k", "k")
+    end
+    return tostring(amount)
+end
+
+-- // Instant
+local function Instant()
+    pcall(function() Remote.Cancel:InvokeServer() end)
+    local ServerTime = workspace:GetServerTimeNow()
+    pcall(function() Remote.ChargeRod:InvokeServer(ServerTime) end)
+    pcall(function() Remote.StartMini:InvokeServer(-1, 0.999) end)
+    task.wait(1)
+    pcall(function() Remote.FishDone:FireServer() end)
+end
+
+-- // blokir auto
+
+-- // Blatant
+local function ExecuteBlatant()
+    pcall(function() Remote.Cancel:InvokeServer() end)
+    local ServerTime = workspace:GetServerTimeNow()
+    pcall(function() Remote.ChargeRod:InvokeServer(ServerTime) end)
+    pcall(function() Remote.StartMini:InvokeServer(-1, 0.999) end)
+
+    task.wait(_G.BlatantBawah)
+
+    pcall(function() Remote.FishDone:FireServer() end)
+end
+
+-- // List Players
+local function GetPlayersList()
+    local list = {}
+    for _, player in ipairs(Services.Players:GetPlayers()) do
+        table.insert(list, player.Name)
+    end
+    return list
+end
+
+-- // Teleport Players
+local function Teleport(targetName)
+    local target = Services.Players:FindFirstChild(targetName)
+    local character = LocalPlayer.Character
+
+    if target and target.Character and character then
+        local targetRoot = target.Character:FindFirstChild("HumanoidRootPart")
+        local myRoot = character:FindFirstChild("HumanoidRootPart")
+
+        if targetRoot and myRoot then
+            myRoot.CFrame = targetRoot.CFrame
+        end
+    end
+end
+
+-- // Teleport Location
+local function TeleportToLocation(position)
+    local character = LocalPlayer.Character
+    local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+    if rootPart then
+        if typeof(position) == "Vector3" then
+            rootPart.CFrame = CFrame.new(position)
+        elseif typeof(position) == "CFrame" then
+            rootPart.CFrame = position
+        end
+    end
+end
+
+-- ==============================================================
+-- ===== LOAD UI
+-- ==============================================================
+local gameName = tostring(game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name):gsub("%[.-%]", "")
+local Window = loadstring(game:HttpGet(
+        "https://raw.githubusercontent.com/ThisiYann/ArtHub/refs/heads/main/UI/Library.lua"))()
+    :Window({
+        Title   = "ArtHub  |",
+        Footer  = gameName,
+        Version = 1,
+    })
+
+local Tabs = {
+    -- Main = Window:AddTab({ Name = "Dashboard", Icon = "player" }),
+    Fishing = Window:AddTab({ Name = "Fishing", Icon = "rbxassetid://97167558235554" }),
+    Teleport = Window:AddTab({ Name = "Teleport", Icon = "gps" }),
+    Tools = Window:AddTab({ Name = "Tools", Icon = "settings" }),
+    Auto = Window:AddTab({ Name = "Auto", Icon = "next" }),
+    Shop = Window:AddTab({ Name = "Shop", Icon = "cart" }),
+    Webhook = Window:AddTab({ Name = "Webhook", Icon = "rbxassetid://137601480983962" }),
+}
+
+-- local Info = Tabs.Main:AddSection("Information");
+
+local FishSupport = Tabs.Fishing:AddSection("Fishing Support");
+local FishLegit = Tabs.Fishing:AddSection("Fishing Legit");
+local FishInstant = Tabs.Fishing:AddSection("Fishing Instant");
+local FishBlatant = Tabs.Fishing:AddSection("Fishing Blatant");
+
+local TelePlayers = Tabs.Teleport:AddSection("Teleport Players");
+local TeleLocation = Tabs.Teleport:AddSection("Teleport Location");
+local TeleEvent = Tabs.Teleport:AddSection("Auto Event");
+
+local ToolsBoost = Tabs.Tools:AddSection("Boost FPS");
+local ToolsPlayers = Tabs.Tools:AddSection("Utility Players");
+local ToolsOther = Tabs.Tools:AddSection("Other Tools");
+
+local AutoTotem = Tabs.Auto:AddSection("Totem");
+local Auto9Totem = Tabs.Auto:AddSection("9 Totem [BETA]");
+local AutoSell = Tabs.Auto:AddSection("Sell All");
+local AutoWeather = Tabs.Auto:AddSection("Weather");
+local AutoFav = Tabs.Auto:AddSection("Auto Favorite");
+
+local ShopMerchant = Tabs.Shop:AddSection("Merchant");
+
+-- ==============================================================
+-- ===== UI INFORMATION
+-- ==============================================================
+
+Info:AddParagraph({
+    Title = "ArtHub Alert!",
+    Content = [[
+This script is still under development!
+There is a possibility it may get detected if used in public servers!
+If you have suggestions or found bugs, please report them to <font color="rgb(0,170,255)">Discord ArtHub</font>!<br/>
+<b>Use at your own risk!</b>
+]],
+    Icon = "rbxassetid:/137636424880904"
+})
+
+-- ==============================================================
+-- ===== UI FISHING
+-- ==============================================================
+
+local CosmeticConnection = nil
+local CosmeticFolder = workspace:WaitForChild("CosmeticFolder")
+
+local function HideEffect(enabled)
+    if CosmeticConnection then
+        CosmeticConnection:Disconnect()
+        CosmeticConnection = nil
+    end
+
+    if enabled then
+        local UserId = tostring(Services.LocalPlayer.UserId)
+
+        -- Bersihkan yang sudah ada di folder
+        for _, obj in pairs(CosmeticFolder:GetChildren()) do
+            if obj.Name ~= UserId then
+                obj:Destroy()
+            end
+        end
+
+        -- Filter otomatis untuk objek baru
+        CosmeticConnection = CosmeticFolder.ChildAdded:Connect(function(child)
+            if child.Name ~= UserId then
+                task.wait()
+                if child and child.Parent then
+                    child:Destroy()
+                end
+            end
+        end)
+    end
+end
+
+-- ===== UI FISHING SUPPORT
+FishSupport:AddToggle({
+    Title = "Hide PopUp Fish",
+    Default = false,
+    Callback = function(status)
+        local a = Services.PG:FindFirstChild("Small Notification");
+        if a and a:FindFirstChild("Display") then a.Display.Visible = not status; end;
+    end
+});
+
+FishSupport:AddToggle({
+    Title = "Hide Effects",
+    Default = false,
+    Callback = function(v)
+        HideEffect(v)
+    end
+});
+
+FishSupport:AddToggle({
+    Title = "Hide Animation",
+    Default = false,
+    Callback = function(is_active)
+        local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+        local animator = char:FindFirstChildOfClass("Humanoid"):FindFirstChildOfClass("Animator")
+        if not animator then return end
+        _G.stopAnimHookEnabled = is_active
+        if is_active then
+            for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
+                track:Stop(0)
+            end
+
+            if not _G.stopAnimConn then
+                _G.stopAnimConn = animator.AnimationPlayed:Connect(function(track)
+                    if _G.stopAnimHookEnabled then
+                        task.defer(track.Stop, track, 0)
+                    end
+                end)
+            end
+        else
+            if _G.stopAnimConn then
+                _G.stopAnimConn:Disconnect()
+                _G.stopAnimConn = nil
+            end
+        end
+    end
+});
+
+-- ===== UI LEGIT FISHING
+local MouseReleaseCallback = nil
+local OldRegister = Modules.InputControl.RegisterMouseReleased
+function Modules.InputControl.RegisterMouseReleased(self, param, callback)
+    MouseReleaseCallback = callback
+    return OldRegister(self, param, callback)
+end
+
+local LegitThread = nil
+
+local function Legit(enabled)
+    if LegitThread then
+        task.cancel(LegitThread); LegitThread = nil
+    end
+
+    Modules.Fishing._autoLoop = enabled
+    Modules.Fishing._autoShake = enabled
+
+    local fishingGui = Services.PG:WaitForChild("Fishing"):FindFirstChild("Main")
+    if fishingGui then fishingGui.Visible = not enabled end
+
+    if enabled then
+        LegitThread = task.spawn(function()
+            local UserId = tostring(Services.LocalPlayer.UserId)
+            local CosmeticFolder = workspace:WaitForChild("CosmeticFolder")
+            local ChargeBar = Services.PG:WaitForChild("Charge"):WaitForChild("Main"):WaitForChild("CanvasGroup")
+                :WaitForChild("Bar")
+
+            pcall(function() Remote.EquipTool:FireServer(1) end)
+            task.wait(0.5)
+
+            while enabled do
+                if not CosmeticFolder:FindFirstChild(UserId) then
+                    pcall(function() Remote.Cancel:InvokeServer() end)
+
+                    local Center = Vector2.new(Services.Camera.ViewportSize.X / 2, Services.Camera.ViewportSize.Y / 2)
+                    pcall(function()
+                        Modules.Fishing:RequestChargeFishingRod(Center, false)
+                    end)
+
+                    local t = tick()
+                    repeat task.wait() until ChargeBar.Size.Y.Scale > 0 or (tick() - t > 2)
+
+                    local t2 = tick()
+                    while ChargeBar:IsDescendantOf(Services.PG) and ChargeBar.Size.Y.Scale < 0.93 do
+                        task.wait()
+                        if (tick() - t2 > 2) then break end
+                    end
+
+                    if MouseReleaseCallback then pcall(MouseReleaseCallback) end
+                    task.wait(1)
+                end
+
+                if Modules.Fishing._autoShake then
+                    pcall(function()
+                        Modules.Fishing:RequestFishingMinigameClick()
+                    end)
+                end
+                task.wait(0.1)
+            end
+        end)
+    else
+        pcall(function() Remote.Cancel:InvokeServer() end)
+    end
+end
+
+-- Cara pasang di Toggle Anda:
+FishLegit:AddToggle({
+    Title = "Legit Perfect Fishing",
+    Default = false,
+    Callback = function(val)
+        Legit(val)
+    end
+})
+
+FishLegit:AddButton({
+    Title = "Manual Fix Stuck",
+    Content = "",
+    Callback = function()
+        Legit(false)
+        pcall(function() Remote.Cancel:InvokeServer() end)
+    end
+})
+
+
+-- ===== UI INSTANT FISHING
+FishInstant:AddToggle({
+    Title = "Start Instant",
+    Default = false,
+    Callback = function(is_active)
+        _G.InstantStatus = is_active
+        if is_active then
+            Remote.EquipTool:FireServer(1)
+            task.spawn(function()
+                while _G.InstantStatus do
+                    Instant()
+                    task.wait(2)
+                end
+            end)
+        end
+    end
+});
+
+-- ===== UI BLATANT FISHING
+FishBlatant:AddInput({
+    Title = "Delay",
+    Value = tostring(_G.BlatantAtas),
+    Callback = function(delay) _G.BlatantAtas = tonumber(delay) or 2 end
+})
+
+FishBlatant:AddInput({
+    Title = "Reel",
+    Value = tostring(_G.BlatantBawah),
+    Callback = function(delay) _G.BlatantBawah = tonumber(delay) or 1 end
+})
+
+-- [[ TOGGLE GABUNGAN ]]
+FishBlatant:AddToggle({
+    Title = "Auto Blatant Fishing",
+    Default = false,
+    Callback = function(is_active)
+        _G.AutoBlatantEnabled = is_active
+
+        local S1, FishingController = pcall(function() return require(Services.RS.Controllers.FishingController) end)
+        local S2, TextController = pcall(function() return require(Services.RS.Controllers.TextNotificationController) end)
+
+        if is_active then
+            -- 1. EQUIP ROD
+            Remote.EquipTool:FireServer(1)
+
+            -- 2. HOOK / MATIKAN SISTEM ASLI
+            if S1 and FishingController then
+                if not Old_Charge then Old_Charge = FishingController.RequestChargeFishingRod end
+                if not Old_Cast then Old_Cast = FishingController.SendFishingRequestToServer end
+
+                FishingController.RequestChargeFishingRod = function() return end
+                FishingController.SendFishingRequestToServer = function() return false end
+
+                if not FishingController._OldGetStatus then
+                    FishingController._OldGetStatus = FishingController.GetAutoFishingState
+                end
+                FishingController.GetAutoFishingState = function() return true end
+                FishingController._autoFishingActive = true
+            end
+
+            -- 3. MATIKAN NOTIFIKASI AUTO FISHING
+            if S2 and TextController then
+                if not TextController._OldDeliver then
+                    TextController._OldDeliver = TextController.DeliverNotification
+                end
+                TextController.DeliverNotification = function(self, data)
+                    if data and data.Text and string.find(tostring(data.Text), "Auto Fishing") then return end
+                    return TextController._OldDeliver(self, data)
+                end
+            end
+
+            -- 4. JALANKAN LOOP BLATANT & UI SYNC
+            task.spawn(function()
+                while _G.AutoBlatantEnabled do
+                    -- Jalankan fungsi blatant
+                    task.spawn(ExecuteBlatant)
+
+                    -- Sinyal ke Server & UI agar tetap terlihat "Auto"
+                    pcall(function()
+                        Remote.UpdateAuto:InvokeServer(true)
+                        if FishingController and FishingController.UpdateUI then
+                            FishingController:UpdateUI()
+                        end
+                    end)
+
+                    task.wait(_G.BlatantAtas)
+                end
+            end)
+        else
+            -- 5. RESTORE KE NORMAL
+            pcall(function() Remote.UpdateAuto:InvokeServer(false) end)
+
+            if S1 and FishingController then
+                if Old_Charge then FishingController.RequestChargeFishingRod = Old_Charge end
+                if Old_Cast then FishingController.SendFishingRequestToServer = Old_Cast end
+                if FishingController._OldGetStatus then
+                    FishingController.GetAutoFishingState = FishingController._OldGetStatus
+                    FishingController._OldGetStatus = nil
+                end
+                FishingController._autoFishingActive = false
+            end
+
+            if S2 and TextController and TextController._OldDeliver then
+                TextController.DeliverNotification = TextController._OldDeliver
+                TextController._OldDeliver = nil
+            end
+        end
+    end
+})
+
+
+-- ==============================================================
+-- ===== UI TELEPORT
+-- ==============================================================
+
+-- // Teleport Players
+local listPlayersTele = GetPlayersList()
+local SelectPlayersTele = nil
+local PlayersTeleList = TelePlayers:AddDropdown({
+    Title = "Select Players",
+    Options = listPlayersTele or {
+        "No Players Found"
+    },
+    Default = listPlayersTele and listPlayersTele[1] or "No Players Found",
+    Callback = function(playerName)
+        SelectPlayersTele = playerName
+    end
+});
+TelePlayers:AddButton({
+    Title = "Refresh Players",
+    SubTitle = "Teleport Now",
+    Callback = function()
+        listPlayersTele = GetPlayersList();
+        PlayersTeleList:SetValues(listPlayersTele);
+        ArtNotify("Refresh Players...", 3)
+    end,
+    SubCallback = function()
+        Teleport(SelectPlayersTele)
+        ArtNotify("Teleporting to Players...", 3)
+    end
+});
+
+-- // Teleport Location (Gunakan CFrame agar lebih akurat dengan rotasi)
+local tpList = {
+    ["Ocean"] = CFrame.new(-1531.25891, 2.87499976, 1916.95715, -0.976264417, -2.66820734e-08, -0.216582134, -1.19312231e-08, 1, -6.94149804e-08, 0.216582134, -6.51832863e-08, -0.976264417),
+    ["Kohana"] = CFrame.new(-606.849609, 2.95007253, 561.600342, 0.552719891, -1.09902825e-08, 0.833367109, 1.06406844e-07, 1, -5.73851509e-08, -0.833367109, 1.20393878e-07, 0.552719891),
+    ["Coral Reefs"] = CFrame.new(-3171.38477, 2.42688584, 2113.9668, 0.872445166, 5.91814686e-09, -0.488712013, -4.95468644e-09, 1, 3.26461125e-09, 0.488712013, -4.26779639e-10, 0.872445166),
+    ["Esoteric Depths"] = CFrame.new(3192.12109, -1302.72986, 1422.62878, 0.414374143, 4.76853224e-08, -0.910106659, 5.05173716e-08, 1, 7.53960165e-08, 0.910106659, -7.72183526e-08, 0.414374143),
+    ["Tropical"] = CFrame.new(-2048.40601, 6.26801682, 3666.85693, -0.776699662, 2.67389115e-08, 0.62987113, 2.52820165e-08, 1, -1.12759242e-08, -0.62987113, 7.16640525e-09, -0.776699662),
+    ["Crater Island"] = CFrame.new(1007.87317, 16.8564091, 5061.23682, 0.762905061, 4.29420943e-09, 0.646510541, -3.13497628e-09, 1, -2.9427516e-09, -0.646510541, 2.18244978e-10, 0.762905061),
+    ["Treasure Room"] = CFrame.new(-3602.82886, -279.07373, -1588.80737, 0.996345043, -6.33248192e-08, 0.085419558, 6.34339514e-08, 1, 1.43659784e-09, -0.085419558, 3.98715327e-09, 0.996345043),
+    ["Sisyphus Statue"] = CFrame.new(-3660.13013, -134.132248, -960.200195, 0.0128281359, 4.63324801e-09, 0.999917746, -3.07432102e-09, 1, -4.59418814e-09, -0.999917746, -3.01513325e-09, 0.0128281359),
+    ["Ancient Jungle"] = CFrame.new(1481.72266, 7.41708279, -431.973175, -0.172147244, -4.36670398e-08, 0.985071242, 2.31048389e-08, 1, 4.83665268e-08, -0.985071242, 3.10860777e-08, -0.172147244),
+    ["Sacred Temple"] = CFrame.new(1477.01538, -21.8498535, -627.868713, 0.981922388, 6.3245416e-08, 0.189284042, -6.47282903e-08, 1, 1.6522167e-09, -0.189284042, -1.38743808e-08, 0.981922388),
+    ["Underground Cellar"] = CFrame.new(2113.85693, -91.1985855, -699.206787, 0.911892891, -1.04966226e-07, -0.410428226, 6.77345824e-08, 1, -1.05254806e-07, 0.410428226, 6.8180924e-08, 0.911892891),
+    ["Ancient Ruin"] = CFrame.new(6014.3999, -585.924194, 4638.5, -0.645331562, 4.66479122e-08, -0.763902545, 8.87730067e-08, 1, -1.39286254e-08, 0.763902545, -7.68025075e-08, -0.645331562),
+    ["Pirate Cove"] = CFrame.new(3424.48657, 4.19297123, 3433.80176, -0.964350939, 5.23302601e-09, -0.264626652, 4.57467442e-09, 1, 3.10412474e-09, 0.264626652, 1.78288484e-09, -0.964350939),
+    ["Crismas Cave"] = CFrame.new(539.852234, -580.58136, 8902.92383, -0.0164511446, 8.50680593e-08, -0.999864697, 6.50031708e-08, 1, 8.4010054e-08, 0.999864697, -6.3612319e-08, -0.0164511446)
+}
+
+local listLocation = {}
+for name in pairs(tpList) do
+    table.insert(listLocation, name)
+end
+table.sort(listLocation)
+
+local SelectLocationTele = listLocation[1]
+
+-- // UI Dropdown
+TeleLocation:AddDropdown({
+    Title = "Select Island",
+    Options = listLocation,
+    Default = listLocation[1] or "No Location Found",
+    Callback = function(locationName)
+        SelectLocationTele = locationName
+    end
+})
+
+-- // UI Button Teleport
+TeleLocation:AddButton({
+    Title = "Teleport Now",
+    Callback = function()
+        if SelectLocationTele and tpList[SelectLocationTele] then
+            local char = Services.LocalPlayer.Character
+            if char and char:FindFirstChild("HumanoidRootPart") then
+                -- Tidak perlu loop string, langsung gunakan CFrame yang ada di tabel
+                pcall(function()
+                    char:PivotTo(tpList[SelectLocationTele])
+                end)
+                ArtNotify("Teleport to " .. SelectLocationTele .. " Successfully!")
+            else
+                ArtNotify("Error: Character not found.")
+            end
+        else
+            ArtNotify("Error: No valid location selected.")
+        end
+    end
+})
+
+-- ==============================================================
+-- ===== UI TOOLS
+-- ==============================================================
+
+-- // Boost FPS
+local isBoostActive = false
+local originalLightingValues = {}
+
+local function ToggleFPSBoost(enabled)
+    for _, v in pairs(game:GetDescendants()) do
+        if v:IsA("BasePart") then
+            v.Material = Enum.Material.SmoothPlastic
+            v.Reflectance = 0
+            v.CastShadow = false
+            v.Transparency = v.Transparency > 0.5 and 1 or v.Transparency
+        elseif v:IsA("Decal") or v:IsA("Texture") then
+            v.Transparency = 1
+        elseif v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Explosion") then
+            v.Enabled = false
+        elseif v:IsA("Beam") or v:IsA("SpotLight") or v:IsA("PointLight") or v:IsA("SurfaceLight") then
+            v.Enabled = false
+        elseif v:IsA("ShirtGraphic") or v:IsA("Shirt") or v:IsA("Pants") then
+            v:Destroy()
+        end
+    end
+
+    local Lighting = game:GetService("Lighting")
+    for _, effect in pairs(Lighting:GetChildren()) do
+        if effect:IsA("PostEffect") then
+            effect.Enabled = false
+        end
+    end
+    Lighting.GlobalShadows = false
+    Lighting.FogEnd = 9e9
+    Lighting.Brightness = 1
+    Lighting.EnvironmentDiffuseScale = 0
+    Lighting.EnvironmentSpecularScale = 0
+    Lighting.ClockTime = 12
+    Lighting.Ambient = Color3.new(1, 1, 1)
+    Lighting.OutdoorAmbient = Color3.new(1, 1, 1)
+
+    local Terrain = workspace:FindFirstChildOfClass("Terrain")
+    if Terrain then
+        Terrain.WaterWaveSize = 0
+        Terrain.WaterWaveSpeed = 0
+        Terrain.WaterReflectance = 0
+        Terrain.WaterTransparency = 1
+        Terrain.Decoration = false
+    end
+
+    settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+    settings().Rendering.MeshPartDetailLevel = Enum.MeshPartDetailLevel.Level01
+    settings().Rendering.TextureQuality = Enum.TextureQuality.Low
+
+    game:GetService("UserSettings").GameSettings.SavedQualityLevel = Enum.SavedQualitySetting.QualityLevel1
+    game:GetService("UserSettings").GameSettings.Fullscreen = true
+
+    for _, s in pairs(workspace:GetDescendants()) do
+        if s:IsA("Sound") and s.Playing and s.Volume > 0.5 then
+            s.Volume = 0.1
+        end
+    end
+
+    if collectgarbage then
+        collectgarbage("collect")
+    end
+
+    local fullWhite = Instance.new("ScreenGui")
+    fullWhite.Name = "FullWhiteScreen"
+    fullWhite.ResetOnSpawn = false
+    fullWhite.IgnoreGuiInset = true
+    fullWhite.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    fullWhite.Parent = game:GetService("CoreGui")
+
+    local whiteFrame = Instance.new("Frame")
+    whiteFrame.Size = UDim2.new(1, 0, 1, 0)
+    whiteFrame.BackgroundColor3 = Color3.new(1, 1, 1)
+    whiteFrame.BorderSizePixel = 0
+    whiteFrame.Parent = fullWhite
+end
+
+
+ToolsBoost:AddToggle({
+    Title = "Boost FPS",
+    Default = false,
+    Callback = function(is_active)
+        if is_active then
+            ToggleFPSBoost(is_active)
+        end
+    end
+})
+
+-- // Freecam
+ToolsOther:AddSubSection("Freecam Features")
+fcRunning = false
+local Camera = workspace.CurrentCamera
+local UserInputService = game:GetService("UserInputService")
+local ContextActionService = game:GetService("ContextActionService")
+local RunService = game:GetService("RunService")
+
+workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
+    local newCamera = workspace.CurrentCamera
+    if newCamera then
+        Camera = newCamera
+    end
+end)
+
+local INPUT_PRIORITY = Enum.ContextActionPriority.High.Value
+local lastFreecamCF
+
+Spring = {}
+Spring.__index = Spring
+
+function Spring.new(freq, pos)
+    local self = setmetatable({}, Spring)
+    self.f = freq
+    self.p = pos
+    self.v = pos * 0
+    return self
+end
+
+function Spring:Update(dt, goal)
+    local f = self.f * 2 * math.pi
+    local offset, decay = goal - self.p, math.exp(-f * dt)
+    local p1 = goal + (self.v * dt - offset * (f * dt + 1)) * decay
+    local v1 = (f * dt * (offset * f - self.v) + self.v) * decay
+    self.p, self.v = p1, v1
+    return p1
+end
+
+function Spring:Reset(pos)
+    self.p, self.v = pos, pos * 0
+end
+
+cameraPos, cameraRot = Vector3.new(), Vector2.new()
+velSpring = Spring.new(5, Vector3.new())
+panSpring = Spring.new(5, Vector2.new())
+
+Input = {}
+do
+    local keyboard = { W = 0, A = 0, S = 0, D = 0, E = 0, Q = 0, Up = 0, Down = 0 }
+    local mouse = { Delta = Vector2.new() }
+    local touchPan = Vector2.new()
+    local touching = false
+    local NAV_KEYBOARD_SPEED = Vector3.new(1, 1, 1)
+    local PAN_MOUSE_SPEED = Vector2.new(1, 1) * (math.pi / 64)
+    local NAV_ADJ_SPEED, NAV_SHIFT_MUL = 0.75, 0.25
+    local navSpeed = 1
+    local mobileBoost = 1
+    local lastTap = 0
+
+    UserInputService.TouchStarted:Connect(function()
+        local t = tick()
+        if t - lastTap < 0.25 then
+            mobileBoost = mobileBoost == 1 and 2 or 1
+        end
+        lastTap = t
+        touching = true
+    end)
+
+    UserInputService.TouchEnded:Connect(function()
+        touching = false
+        touchPan = Vector2.new()
+    end)
+
+    UserInputService.TouchMoved:Connect(function(touch)
+        if touching then
+            touchPan = Vector2.new(-touch.Delta.y, -touch.Delta.x)
+        end
+    end)
+
+    function Input.Vel(dt)
+        if UserInputService.TouchEnabled then
+            local mv = LocalPlayer:GetMoveVector()
+            return Vector3.new(mv.X, 0, -mv.Z) * mobileBoost
+        end
+        navSpeed = math.clamp(navSpeed + dt * (keyboard.Up - keyboard.Down) * NAV_ADJ_SPEED, 0.01, 4)
+        local move = Vector3.new(keyboard.D - keyboard.A, keyboard.E - keyboard.Q, keyboard.S - keyboard.W)
+        local shift = UserInputService:IsKeyDown(Enum.KeyCode.LeftShift)
+        return move * NAV_KEYBOARD_SPEED * navSpeed * (shift and NAV_SHIFT_MUL or 1)
+    end
+
+    function Input.Pan(dt)
+        if UserInputService.TouchEnabled then
+            local v = touchPan * (math.pi / 360)
+            touchPan = Vector2.new()
+            return v
+        end
+        local v = mouse.Delta * PAN_MOUSE_SPEED
+        mouse.Delta = Vector2.new()
+        return v
+    end
+
+    function Keypress(_, state, input)
+        keyboard[input.KeyCode.Name] = (state == Enum.UserInputState.Begin) and 1 or 0
+        return Enum.ContextActionResult.Sink
+    end
+
+    function MousePan(_, _, input)
+        if UserInputService.TouchEnabled then return Enum.ContextActionResult.Sink end
+        mouse.Delta = Vector2.new(-input.Delta.y, -input.Delta.x)
+        return Enum.ContextActionResult.Sink
+    end
+
+    function Zero(t)
+        for k in pairs(t) do t[k] = 0 end
+    end
+
+    function Input.StartCapture()
+        if not UserInputService.TouchEnabled then
+            ContextActionService:BindActionAtPriority("FreecamKeyboard", Keypress, false, INPUT_PRIORITY,
+                Enum.KeyCode.W, Enum.KeyCode.A, Enum.KeyCode.S, Enum.KeyCode.D,
+                Enum.KeyCode.E, Enum.KeyCode.Q, Enum.KeyCode.Up, Enum.KeyCode.Down)
+            ContextActionService:BindActionAtPriority("FreecamMousePan", MousePan, false, INPUT_PRIORITY,
+                Enum.UserInputType.MouseMovement)
+        end
+    end
+
+    function Input.StopCapture()
+        Zero(keyboard)
+        Zero(mouse)
+        if not UserInputService.TouchEnabled then
+            ContextActionService:UnbindAction("FreecamKeyboard")
+            ContextActionService:UnbindAction("FreecamMousePan")
+        end
+    end
+end
+
+function GetFocusDistance(cf)
+    local znear, viewport = 0.1, Camera.ViewportSize
+    local projy = 2 * math.tan(math.rad(70 / 2))
+    local projx = (viewport.X / viewport.Y) * projy
+    local fx, fy, fz = cf.RightVector, cf.UpVector, cf.LookVector
+    local minDist, minVect = 512, Vector3.new()
+    for x = 0, 1, 0.5 do
+        for y = 0, 1, 0.5 do
+            local cx = (x - 0.5) * projx
+            local cy = (y - 0.5) * projy
+            local offset = fx * cx - fy * cy + fz
+            local origin = cf.Position + offset * znear
+            local _, hit = workspace:FindPartOnRay(Ray.new(origin, offset.Unit * minDist))
+            if hit then
+                local d = (hit - origin).Magnitude
+                if d < minDist then
+                    minDist, minVect = d, offset.Unit
+                end
+            end
+        end
+    end
+    return fz:Dot(minVect) * minDist
+end
+
+function StepFreecam(dt)
+    local vel = velSpring:Update(dt, Input.Vel(dt))
+    local pan = panSpring:Update(dt, Input.Pan(dt))
+    cameraRot = cameraRot + pan * Vector2.new(0.75, 1)
+    cameraRot = Vector2.new(math.clamp(cameraRot.X, -math.rad(90), math.rad(90)), cameraRot.Y)
+    local cf = CFrame.new(cameraPos) * CFrame.fromOrientation(cameraRot.X, cameraRot.Y, 0) *
+        CFrame.new(vel * 64 * dt)
+    cameraPos = cf.Position
+    Camera.CFrame = cf
+    Camera.Focus = cf * CFrame.new(0, 0, -GetFocusDistance(cf))
+end
+
+PlayerState = {}
+function PlayerState.Push() end
+
+function PlayerState.Pop() end
+
+function StartFreecam(pos)
+    if fcRunning then StopFreecam() end
+    local cf = pos or lastFreecamCF or Camera.CFrame
+    cameraRot = Vector2.new()
+    cameraPos = cf.Position
+    lastFreecamCF = cf
+    velSpring:Reset(Vector3.new())
+    panSpring:Reset(Vector2.new())
+    PlayerState.Push()
+    RunService:BindToRenderStep("Freecam", Enum.RenderPriority.Camera.Value, StepFreecam)
+    Input.StartCapture()
+    fcRunning = true
+end
+
+function StopFreecam()
+    if not fcRunning then return end
+    Input.StopCapture()
+    RunService:UnbindFromRenderStep("Freecam")
+    PlayerState.Pop()
+    fcRunning = false
+end
+
+function ResetFreecamPosition()
+    local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    local hrp = char:WaitForChild("HumanoidRootPart")
+    local cf = hrp.CFrame * CFrame.new(0, 2, -8)
+    cameraPos = cf.Position
+    cameraRot = Vector2.new()
+    lastFreecamCF = cf
+end
+
+ToolsOther:AddToggle({
+    Title = "Freecam Mode",
+    Default = false,
+    Callback = function(state)
+        if state then
+            StartFreecam()
+        else
+            StopFreecam()
+        end
+    end
+})
+
+ToolsOther:AddButton({
+    Title = "Reset Freecam",
+    Content = "Reposition camera in front of player",
+    Callback = function()
+        if fcRunning then
+            ResetFreecamPosition()
+        end
+    end
+})
+
+-- // Ping
+ToolsOther:AddSubSection("Ping Monitor")
+local Stats = game:GetService("Stats")
+local ScreenGui = Instance.new("ScreenGui")
+ToolsOther:AddButton({
+    Title = "Ping",
+    Callback = function()
+        ScreenGui.Name = "DynamicPerfStats"
+        ScreenGui.Parent = Services.LocalPlayer:WaitForChild("PlayerGui")
+
+        local MainFrame = Instance.new("Frame")
+        MainFrame.Size = UDim2.new(0, 180, 0, 110)
+        MainFrame.Position = UDim2.new(1, -190, 0, 50)
+        MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+        MainFrame.BorderSizePixel = 0
+        MainFrame.Active = true
+        MainFrame.Draggable = true
+        MainFrame.Parent = ScreenGui
+
+        local Corner = Instance.new("UICorner", MainFrame)
+
+        local Header = Instance.new("Frame")
+        Header.Size = UDim2.new(1, 0, 0, 25)
+        Header.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        Header.Parent = MainFrame
+        Instance.new("UICorner", Header)
+
+        local Title = Instance.new("TextLabel")
+        Title.Size = UDim2.new(1, -50, 1, 0)
+        Title.Position = UDim2.new(0, 10, 0, 0)
+        Title.BackgroundTransparency = 1
+        Title.Text = "ARTHUB MONITOR"
+        Title.TextColor3 = Color3.new(1, 1, 1)
+        Title.Font = Enum.Font.SourceSansBold
+        Title.TextSize = 13
+        Title.TextXAlignment = Enum.TextXAlignment.Left
+        Title.Parent = Header
+
+        local function CreateBtn(txt, pos, color, callback)
+            local btn = Instance.new("TextButton")
+            btn.Size = UDim2.new(0, 20, 0, 20)
+            btn.Position = pos
+            btn.BackgroundColor3 = color
+            btn.Text = txt
+            btn.TextColor3 = Color3.new(1, 1, 1)
+            btn.Parent = Header
+            Instance.new("UICorner", btn)
+            btn.MouseButton1Click:Connect(callback)
+            return btn
+        end
+
+        CreateBtn("X", UDim2.new(1, -25, 0, 2.5), Color3.fromRGB(150, 50, 50), function() ScreenGui:Destroy() end)
+
+        local Content = Instance.new("Frame")
+        Content.Size = UDim2.new(1, 0, 1, -25)
+        Content.Position = UDim2.new(0, 0, 0, 25)
+        Content.BackgroundTransparency = 1
+        Content.Parent = MainFrame
+
+        local minimized = false
+        CreateBtn("-", UDim2.new(1, -50, 0, 2.5), Color3.fromRGB(70, 70, 70), function()
+            minimized = not minimized
+            Content.Visible = not minimized
+            MainFrame:TweenSize(minimized and UDim2.new(0, 180, 0, 25) or UDim2.new(0, 180, 0, 110), "Out", "Quart", 0.3,
+                true)
+        end)
+
+        local function CreateLabel(pos)
+            local l = Instance.new("TextLabel")
+            l.Size = UDim2.new(1, -20, 0, 18)
+            l.Position = pos
+            l.BackgroundTransparency = 1
+            l.TextColor3 = Color3.new(1, 1, 1)
+            l.Font = Enum.Font.Code
+            l.TextSize = 13
+            l.TextXAlignment = Enum.TextXAlignment.Left
+            l.Parent = Content
+            return l
+        end
+
+        local FPSL = CreateLabel(UDim2.new(0, 10, 0, 5))
+        local PingL = CreateLabel(UDim2.new(0, 10, 0, 25))
+        local CPUL = CreateLabel(UDim2.new(0, 10, 0, 45))
+        local MemL = CreateLabel(UDim2.new(0, 10, 0, 65))
+
+        local function GetStatusColor(value, good, mid)
+            if value <= good then return Color3.fromRGB(0, 255, 100) end
+            if value <= mid then return Color3.fromRGB(255, 200, 0) end
+            return Color3.fromRGB(255, 80, 80)
+        end
+
+        local function GetFPSColor(value)
+            if value >= 55 then return Color3.fromRGB(0, 255, 100) end
+            if value >= 30 then return Color3.fromRGB(255, 200, 0) end
+            return Color3.fromRGB(255, 80, 80)
+        end
+
+        local lastUpdate = 0
+        RunService.Heartbeat:Connect(function(dt)
+            lastUpdate = lastUpdate + dt
+            if lastUpdate >= 0.5 then
+                lastUpdate = 0
+
+                local fps = math.floor(1 / dt)
+                local ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue())
+                local mem = math.floor(Stats:GetTotalMemoryUsageMb())
+                local cpuRaw = dt * 1000
+
+                PingL.Text = string.format("PING : %d ms", ping)
+                PingL.TextColor3 = GetStatusColor(ping, 60, 150)
+
+                CPUL.Text = string.format("CPU  : %.2f ms", cpuRaw)
+                CPUL.TextColor3 = GetStatusColor(cpuRaw, 16.6, 33.3)
+            end
+        end)
+    end
+})
+
+-- // UTILITY PLSYERS
+local walkOnWaterConnection = nil
+local isWalkOnWater = false
+local waterPlatform = nil
+
+ToolsPlayers:AddToggle({
+    Title = "Walk On Water",
+    Default = false,
+    Callback = function(v)
+        isWalkOnWater = v
+        if isWalkOnWater then
+            if not waterPlatform then
+                waterPlatform = Instance.new("Part")
+                waterPlatform.Name = "WaterPlatform"
+                waterPlatform.Anchored = true
+                waterPlatform.CanCollide = true
+                waterPlatform.Transparency = 1
+                waterPlatform.Size = Vector3.new(15, 1, 15)
+                waterPlatform.Parent = workspace
+            end
+            if walkOnWaterConnection then walkOnWaterConnection:Disconnect() end
+
+            walkOnWaterConnection = RunService.RenderStepped:Connect(function()
+                local character = LocalPlayer.Character
+                if not isWalkOnWater or not character then return end
+                local hrp = character:FindFirstChild("HumanoidRootPart")
+                if not hrp then return end
+                if not waterPlatform or not waterPlatform.Parent then
+                    waterPlatform = Instance.new("Part")
+                    waterPlatform.Name = "WaterPlatform"
+                    waterPlatform.Anchored = true
+                    waterPlatform.CanCollide = true
+                    waterPlatform.Transparency = 1
+                    waterPlatform.Size = Vector3.new(15, 1, 15)
+                    waterPlatform.Parent = workspace
+                end
+
+                local rayParams = RaycastParams.new()
+                rayParams.FilterDescendantsInstances = { workspace.Terrain }
+                rayParams.FilterType = Enum.RaycastFilterType.Include
+                rayParams.IgnoreWater = false
+
+                local rayOrigin = hrp.Position + Vector3.new(0, 5, 0)
+                local rayDirection = Vector3.new(0, -500, 0)
+                local result = workspace:Raycast(rayOrigin, rayDirection, rayParams)
+
+                if result and result.Material == Enum.Material.Water then
+                    local waterY = result.Position.Y
+                    waterPlatform.Position = Vector3.new(hrp.Position.X, waterY, hrp.Position.Z)
+                    if hrp.Position.Y < waterY + 2 and hrp.Position.Y > waterY - 5 then
+                        if not UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+                            hrp.CFrame = CFrame.new(hrp.Position.X, waterY + 3.2, hrp.Position.Z)
+                        end
+                    end
+                else
+                    waterPlatform.Position = Vector3.new(hrp.Position.X, -500, hrp.Position.Z)
+                end
+            end)
+        else
+            if walkOnWaterConnection then
+                walkOnWaterConnection:Disconnect()
+                walkOnWaterConnection = nil
+            end
+            if waterPlatform then
+                waterPlatform:Destroy()
+                waterPlatform = nil
+            end
+        end
+    end
+})
+local WalkSpeedValue = 16
+local WalkSpeedLoop = nil
+
+ToolsPlayers:AddInput({
+    Title = "Walk Speed",
+    Default = "16",
+    Placeholder = "Enter speed...",
+    Callback = function(speed)
+        WalkSpeedValue = tonumber(speed) or 16
+        local Character = Services.LocalPlayer.Character
+        if Character and Character:FindFirstChild("Humanoid") then
+            Character.Humanoid.WalkSpeed = WalkSpeedValue
+        end
+        if not WalkSpeedLoop then
+            WalkSpeedLoop = Services.RunService.Stepped:Connect(function()
+                local Char = Services.LocalPlayer.Character
+                local Hum = Char and Char:FindFirstChild("Humanoid")
+                if Hum and Hum.WalkSpeed ~= WalkSpeedValue then
+                    Hum.WalkSpeed = WalkSpeedValue
+                end
+            end)
+        end
+    end
+})
+
+ToolsPlayers:AddToggle({
+    Title = "Radar",
+    Default = false,
+    Callback = function(v)
+        pcall(function()
+            Remote.Radar:InvokeServer(v)
+        end)
+    end
+})
+
+ToolsPlayers:AddToggle({
+    Title = "Oxigen Tank",
+    Default = false,
+    Callback = function(v)
+        if v then
+            pcall(function()
+                Remote.EquipOxygen:InvokeServer(105)
+            end)
+        else
+            pcall(function()
+                Remote.UnequipOxygen:InvokeServer()
+            end)
+        end
+    end
+})
+
+-- ==============================================================
+-- ===== UI WEBHOOK
+-- ==============================================================
+
+
+local Section = {
+    WebhookConfig = Tabs.Webhook:AddSection("Settings", true),
+    WebhookCaught = Tabs.Webhook:AddSection("Caught"),
+    WebhookMonitor = Tabs.Webhook:AddSection("Monitor")
+}
+
+local WEBHOOK_URL = ""
+local LOGO_URL = "https://cdn.discordapp.com/attachments/1440154438105825413/1459710099596640296/content.png"
+local selectedTiers = {}
+local selectedNames = {}
+local selectedMutations = {}
+local isLoggingActive = false
+local isInventoryLogging = false
+local inventoryDelayHours = 1
+
+local tierMapping = {
+    [1] = "Common",
+    [2] = "Uncommon",
+    [3] = "Rare",
+    [4] = "Epic",
+    [5] = "Legendary",
+    [6] = "Mythic",
+    [7] = "SECRET"
+}
+
+local function GetTierColor(t)
+    return ({
+        Common = 0xbdc3c7,
+        Uncommon = 0x2ecc71,
+        Rare = 0x3498db,
+        Epic = 0x9b59b6,
+        Legendary = 0xffff00,
+        Mythic = 0xff0000,
+        SECRET = 0x00ffcc
+    })[t] or 0x34495e
+end
+
+local function format(n)
+    return tostring(n):reverse():gsub("%d%d%d", "%1,"):reverse():gsub("^,", "")
+end
+
+local function getThumb(idIcon)
+    if not idIcon or idIcon == 0 then return LOGO_URL end
+    local cleanId = tostring(idIcon):match("%d+")
+    if not cleanId then return LOGO_URL end
+
+    local apiUrl = "https://thumbnails.roblox.com/v1/assets?assetIds=" ..
+        cleanId .. "&type=Asset&size=420x420&format=Png"
+    local finalUrl = LOGO_URL
+
+    pcall(function()
+        local response = game:HttpGet(apiUrl)
+        local data = Services.HttpService:JSONDecode(response)
+        if data and data.data and data.data[1] and data.data[1].imageUrl then
+            finalUrl = data.data[1].imageUrl
+        end
+    end)
+    return finalUrl
+end
+
+local function send(payload)
+    if WEBHOOK_URL == "" then return end
+    ((syn and syn.request) or request)({
+        Url = WEBHOOK_URL,
+        Method = "POST",
+        Headers = {["Content-Type"]="application/json"},
+        Body = Services.HttpService:JSONEncode(payload)
+    })
+end
+
+Section.WebhookConfig:AddInput({
+    Title = "Webhook URL",
+    Callback = function(v) WEBHOOK_URL = v end
+})
+
+Section.WebhookCaught:AddDropdown({
+    Title = "Tier",
+    Options = {"Common","Uncommon","Rare","Epic","Legendary","Mythic","SECRET"},
+    Multi = true,
+    Callback = function(v)
+        selectedTiers = {}
+        for _, t in ipairs(v) do selectedTiers[t] = true end
+    end
+})
+
+Section.WebhookCaught:AddDropdown({
+    Title = "Fish Name",
+    Options = Config.Auto.Favorite.NameList,
+    Multi = true,
+    Callback = function(v)
+        selectedNames = {}
+        for _, n in ipairs(v) do selectedNames[n] = true end
+    end
+})
+
+Section.WebhookCaught:AddDropdown({
+    Title = "Mutation",
+    Options = Config.Auto.Favorite.MutationList,
+    Multi = true,
+    Callback = function(v)
+        selectedMutations = {}
+        for _, m in ipairs(v) do selectedMutations[m] = true end
+    end
+})
+
+Section.WebhookCaught:AddToggle({
+    Title = "Enable Caught",
+    Callback = function(v) isLoggingActive = v end
+})
+
+Section.WebhookMonitor:AddInput({
+    Title = "Delay (Hours)",
+    Default = "1",
+    Callback = function(v) inventoryDelayHours = tonumber(v) or 1 end
+})
+
+Section.WebhookMonitor:AddToggle({
+    Title = "Enable Monitor",
+    Callback = function(v)
+        isInventoryLogging = v
+        if not v then return end
+        task.spawn(function()
+            while isInventoryLogging do
+                send({
+                    username = "ArtHub Monitor",
+                    avatar_url = LOGO_URL,
+                    embeds = {{
+                        title = "Inventory Update",
+                        color = 0x3498db,
+                        fields = {
+                            {name="Player",value=Services.LocalPlayer.DisplayName,inline=true},
+                            {name="Caught",value=tostring(Services.LocalPlayer.leaderstats.Caught.Value),inline=true}
+                        },
+                        timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
+                    }}
+                })
+                task.wait(inventoryDelayHours * 3600)
+            end
+        end)
+    end
+})
+
+local function GetMutation(catch, static)
+    local m = {}
+    if catch.VariantId and catch.VariantId ~= "" then table.insert(m, tostring(catch.VariantId)) end
+    if static.Weight and catch.Weight and catch.Weight >= static.Weight.Big.Min then table.insert(m,"Big") end
+    if catch.Shiny then table.insert(m,"Shiny") end
+    return #m > 0 and table.concat(m," + ") or "None"
+end
+
+Remote.NewFishNotif.OnClientEvent:Connect(function(id, catch)
+    if not isLoggingActive then return end
+
+    for _, m in ipairs(Services.RS.Items:GetChildren()) do
+        local ok, data = pcall(require, m)
+        if ok and data.Data and data.Data.Id == id then
+            
+            -- Ambil data & proteksi jika nil
+            local rawTier = data.Data.Tier or "Unknown"
+            local tier = tierMapping[rawTier] or rawTier
+            local fishName = data.Data.Name or "Unknown Fish"
+            
+            -- Filter Tier & Name
+            if next(selectedTiers) and not selectedTiers[tier] then return end
+            if next(selectedNames) and not selectedNames[fishName] then return end
+
+            local mut = GetMutation(catch, data) or "None" -- Proteksi nil
+            
+            -- Filter Mutation
+            if next(selectedMutations) then
+                local pass = false
+                for k in pairs(selectedMutations) do
+                    if mut:lower():find(k:lower()) then pass = true end
+                end
+                if not pass then return end
+            end
+
+            -- Pastikan fungsi format tersedia, jika tidak pakai tostring
+            local function safeFormat(val)
+                return (type(format) == "function") and format(val) or tostring(val)
+            end
+
+            -- Kirim Webhook
+            send({
+                username = "ArtHub Notify",
+                avatar_url = LOGO_URL,
+                embeds = {{
+                    title = "🐟 Fish Caught!",
+                    color = (type(GetTierColor) == "function") and GetTierColor(tier) or 0xFFFFFF,
+                    thumbnail = { url = getThumb(data.Data.Icon) or "" },
+                    fields = {
+                        {name = "👤 Player", value = "```" .. (Services.LocalPlayer.DisplayName or "Unknown") .. "```", inline = true},
+                        {name = "🐟 Fish", value = "```" .. fishName .. "```", inline = true},
+                        {name = "✨ Tier", value = "```" .. tier .. "```", inline = true},
+                        {name = "🧬 Mutation", value = "```" .. mut .. "```", inline = true},
+                        {name = "⚖️ Weight", value = "```" .. safeFormat(catch.Weight or 0) .. " Kg```", inline = true},
+                        {name = "💰 Price", value = "```$" .. safeFormat(data.SellPrice or 0) .. "```", inline = true}
+                    },
+                    footer = { text = "ArtHub Logging System" },
+                    timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
+                }}
+            })
+        end
+    end
+end)
+
+-- ==============================================================
+-- ===== UI AUTO
+-- ==============================================================
+local AutoConfig = {
+    autoSellEnabled = false,
+    sellMode = "Delay",
+    sellDelay = 60,
+    inputSellCount = 1000,
+
+    weather = false
+}
+local TOTEM_DATA = {
+    ["Luck Totem"] = { Id = 1, Duration = 3601 },
+    ["Mutation Totem"] = { Id = 2, Duration = 3601 },
+    ["Shiny Totem"] = { Id = 3, Duration = 3601 }
+}
+
+local AUTO_TOTEM_ACTIVE = false
+local AUTO_TOTEM_THREAD = nil
+local selectedTotemName = "Luck Totem"
+local currentTotemExpiry = 0
+
+-- FUNCTION: Mencari UUID
+local function GetTotemUUID(name)
+    local config = TOTEM_DATA[name]
+    if not config or not loadData.Data then return nil end
+
+    local s, d = pcall(function() return loadData.Data:GetExpect("Inventory") end)
+
+    if s and d and d.Totems then
+        for _, item in ipairs(d.Totems) do
+            if tonumber(item.Id) == config.Id and (item.Count or 1) >= 1 then
+                return item.UUID
+            end
+        end
+    end
+    return nil
+end
+
+-- FUNCTION: Looping Otomatis
+local function RunAutoTotemLoop()
+    if AUTO_TOTEM_THREAD then task.cancel(AUTO_TOTEM_THREAD) end
+    AUTO_TOTEM_THREAD = task.spawn(function()
+        while AUTO_TOTEM_ACTIVE do
+            local timeLeft = currentTotemExpiry - os.time()
+            if timeLeft <= 0 then
+                local uuid = GetTotemUUID(selectedTotemName)
+                if uuid then
+                    pcall(function()
+                        Modules.Net["RE/SpawnTotem"]:FireServer(uuid)
+                    end)
+                    currentTotemExpiry = os.time() + TOTEM_DATA[selectedTotemName].Duration
+
+                    task.spawn(function()
+                        task.wait(0.5)
+                        local attempts = 0
+                        while attempts < 5 do
+                            pcall(function()
+                                Remote.EquipTool:FireServer(1)
+                            end)
+                            local char = Services.LocalPlayer.Character
+                            if char and char:FindFirstChildOfClass("Tool") then
+                                break
+                            end
+                            attempts = attempts + 1
+                            task.wait(0.7)
+                        end
+                    end)
+                end
+            end
+            task.wait(1)
+        end
+    end)
+end
+
+AutoTotem:AddDropdown({
+    Title = "Select Totem",
+    Options = { "Luck Totem", "Mutation Totem", "Shiny Totem" },
+    Default = "Luck Totem",
+    Callback = function(v)
+        selectedTotemName = v
+        currentTotemExpiry = 0
+    end
+})
+
+AutoTotem:AddToggle({
+    Title = "Start Auto Totem",
+    Default = false,
+    Callback = function(is_active)
+        AUTO_TOTEM_ACTIVE = is_active
+        if is_active then
+            currentTotemExpiry = 0
+            RunAutoTotemLoop()
+        else
+            if AUTO_TOTEM_THREAD then task.cancel(AUTO_TOTEM_THREAD) end
+        end
+    end
+})
+
+AutoSell:AddInput({
+    Title = "Set Delay",
+    Default = "1000",
+    Content = "Delay = Detik",
+    Placeholder = "Angka saja...",
+    Callback = function(v)
+        local val = tonumber(v)
+        AutoConfig.sellDelay = val
+    end
+})
+
+AutoSell:AddToggle({
+    Title = "Start Selling",
+    Default = false,
+    Callback = function(is_active)
+        AutoConfig.autoSellEnabled = is_active
+
+        if is_active then
+            task.spawn(function()
+                local SellRemote = Modules.Net["RF/SellAllItems"]
+                while AutoConfig.autoSellEnabled do
+                    if SellRemote then
+                        pcall(function() SellRemote:InvokeServer() end)
+                    end
+                    task.wait(AutoConfig.sellDelay)
+                end
+            end)
+        end
+    end
+})
+
+AutoWeather:AddToggle({
+    Title = "Auto Buy Weather",
+    Default = false,
+    Callback = function(v)
+        AutoConfig.weather = v
+        if v then
+            task.spawn(function()
+                while AutoConfig.weather do
+                    for _, name in ipairs({ "Cloudy", "Wind", "Storm" }) do
+                        if not AutoConfig.weather then break end
+                        pcall(function()
+                            Remote.BuyWeather:InvokeServer(name)
+                        end)
+                        task.wait(0.1)
+                    end
+                    task.wait(1)
+                end
+            end)
+        end
+    end
+})
+
+-- ==============================================================
+-- ===== UI SHOP
+-- ==============================================================
+
+local currentMerchantItems = {}
+local selectedItemID = nil
+
+local ItemDropdown = ShopMerchant:AddDropdown({
+    Title = "Select Merchant Item",
+    Options = { "Click Refresh to Scan" },
+    Default = "None",
+    Callback = function(v)
+        for id, name in pairs(currentMerchantItems) do
+            if name == v then
+                selectedItemID = id
+                break
+            end
+        end
+    end
+})
+
+local function RefreshMerchant()
+    local success, err = pcall(function()
+        local ReplionModule = Services.RS.Packages:WaitForChild("Replion", 10)
+        local ReplionClient = require(ReplionModule).Client
+        local MerchantReplion = ReplionClient:WaitReplion("Merchant", 5)
+        local ItemUtility = require(Services.RS.Shared:WaitForChild("ItemUtility"))
+        local MarketItemData = require(Services.RS.Shared:WaitForChild("MarketItemData"))
+
+        local merchantData = nil
+        if MerchantReplion then
+            merchantData = (type(MerchantReplion.GetData) == "function" and MerchantReplion:GetData()) or
+                MerchantReplion.Data or MerchantReplion
+        end
+
+        if merchantData and merchantData.Items then
+            currentMerchantItems = {}
+            local newOptions = {}
+
+            for _, itemID in ipairs(merchantData.Items) do
+                local marketData = nil
+                for _, data in ipairs(MarketItemData) do
+                    if data.Id == itemID then
+                        marketData = data; break
+                    end
+                end
+
+                if marketData and not marketData.SkinCrate then
+                    local itemDetail = nil
+                    pcall(function()
+                        itemDetail = ItemUtility:GetItemDataFromItemType(marketData.Type,
+                            marketData.Identifier)
+                    end)
+
+                    local name = (itemDetail and itemDetail.Data and itemDetail.Data.Name) or marketData.Identifier or
+                        "Unknown"
+
+                    local formattedPrice = FormatPrice(marketData.Price or 0)
+                    local displayName = name .. " [" .. formattedPrice .. "]"
+
+                    currentMerchantItems[itemID] = displayName
+                    table.insert(newOptions, displayName)
+                end
+            end
+
+            if #newOptions > 0 then
+                ItemDropdown:SetValues(newOptions)
+            else
+                ItemDropdown:SetValues({ "No Items Available" })
+            end
+        else
+            ItemDropdown:SetValues({ "Merchant Not Found" })
+        end
+    end)
+    if not success then print("❌ Error: " .. tostring(err)) end
+end
+
+ShopMerchant:AddButton({
+    Title = "Refresh Item List",
+    Callback = function()
+        RefreshMerchant()
+    end
+})
+
+ShopMerchant:AddButton({
+    Title = "Purchase Selected Item",
+    Callback = function()
+        if selectedItemID then
+            local res = Remote.Merchant:InvokeServer(selectedItemID)
+            if res then
+                print("✅ Purchased!")
+            else
+                print("❌ Failed (Check Balance)")
+            end
+        else
+            print("⚠️ Select an item first")
+        end
+    end
+})
+
+LocalPlayer.CharacterAdded:Connect(function()
+    task.wait(2)
+    HideNameUtils:CaptureOriginals()
+    if not HdeNme.State.isV1Enabled and not HdeNme.State.isV2Enabled then
+        HideNameUtils:RestoreIdentity()
+    end
+end)
+
+AutoFav:AddDropdown({
+    Title = "Select Item Names",
+    Multi = true,
+    Options = Config.Auto.Favorite.NameList,
+    Callback = function(v) Config.Auto.Favorite.SelectName = v end
+})
+
+AutoFav:AddDropdown({
+    Title = "Select Tiers",
+    Multi = true,
+    Options = Config.Auto.Favorite.RarityList,
+    Callback = function(v) Config.Auto.Favorite.SelectRarity = v end
+})
+
+AutoFav:AddDropdown({
+    Title = "Select Mutations",
+    Multi = true,
+    Options = Config.Auto.Favorite.MutationList,
+    Callback = function(v) Config.Auto.Favorite.SelectMutation = v end
+})
+
+AutoFav:AddToggle({
+    Title = "Enable Auto Favorite",
+    Default = false,
+    Callback = function(v) Config.Auto.Favorite.Enabled = v end
+})
+
+local TOTEM_NAMES = { "Luck Totem", "Mutation Totem", "Shiny Totem" }
+
+local selectedTotemName = "Luck Totem"
+
+local REF_CENTER = Vector3.new(93.932, 9.532, 2684.134)
+local REF_SPOTS = {
+    -- MIDDLE (Y ~ 9.5)
+    Vector3.new(45.0468979, 9.51625347, 2730.19067), -- 1
+    Vector3.new(145.644608, 9.51625347, 2721.90747), -- 2
+    Vector3.new(84.6406631, 10.2174253, 2636.05786), -- 3
+
+    -- UPPER (Y ~ 109.5)
+    Vector3.new(45.0468979, 110.516253, 2730.19067), -- 4
+    Vector3.new(145.644608, 110.516253, 2721.90747), -- 5
+    Vector3.new(84.6406631, 111.217425, 2636.05786), -- 6
+
+    -- LOWER (Y ~ -90.5)
+    Vector3.new(45.0468979, -92.483747, 2730.19067), -- 7
+    Vector3.new(145.644608, -92.483747, 2721.90747), -- 8
+    Vector3.new(84.6406631, -93.782575, 2636.05786), -- 9
+}
+
+local AUTO_9_TOTEM_ACTIVE = false
+local AUTO_9_TOTEM_THREAD = nil
+local stateConnection = nil
+local noClipConnection = nil
+local physicsParts = {}
+
+-- ==============================================================
+-- ===== Helper Functions
+-- ==============================================================
+
+local function GetPlayerDataReplion()
+    if PlayerDataReplion then return PlayerDataReplion end
+    local success, result = pcall(function()
+        return Modules.Replion.Client:GetReplion("Data")
+    end)
+    if success then
+        PlayerDataReplion = result
+        return result
+    end
+    return nil
+end
+
+local function GetTotemUUID(name)
+    local replionData = GetPlayerDataReplion()
+    if not replionData then return nil end
+
+    local success, inventoryData = pcall(function()
+        return replionData:GetExpect("Inventory")
+    end)
+
+    if success and inventoryData and inventoryData.Totems then
+        for _, totem in ipairs(inventoryData.Totems) do
+            if tonumber(totem.Id) == TOTEM_DATA[name].Id and (totem.Count or 1) >= 1 then
+                return totem.UUID
+            end
+        end
+    end
+    return nil
+end
+
+-- ==============================================================
+-- ===== Enhanced NoClip System
+-- ==============================================================
+
+local function GetFlyPart()
+    local char = LocalPlayer.Character
+    if not char then return nil end
+    return char:FindFirstChild("HumanoidRootPart") or
+        char:FindFirstChild("UpperTorso") or
+        char:FindFirstChild("Torso")
+end
+
+local function EnableNoClip()
+    local char = LocalPlayer.Character
+    if not char then return end
+
+    physicsParts = {}
+
+    for _, part in ipairs(char:GetDescendants()) do
+        if part:IsA("BasePart") then
+            physicsParts[part] = {
+                CanCollide = part.CanCollide,
+                CanQuery = part.CanQuery,
+                Massless = part.Massless
+            }
+            part.CanCollide = false
+            part.CanQuery = false
+            part.Massless = true
+        end
+    end
+
+    if noClipConnection then
+        noClipConnection:Disconnect()
+    end
+
+    noClipConnection = RunService.Stepped:Connect(function()
+        if not AUTO_9_TOTEM_ACTIVE then return end
+
+        local char = LocalPlayer.Character
+        if not char then return end
+
+        for _, part in ipairs(char:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
+                part.CanQuery = false
+                part.Massless = true
+
+                -- Juga set untuk joint dan constraints
+                if part:FindFirstChildOfClass("Weld") then
+                    part:FindFirstChildOfClass("Weld").Enabled = false
+                end
+                if part:FindFirstChildOfClass("WeldConstraint") then
+                    part:FindFirstChildOfClass("WeldConstraint").Enabled = false
+                end
+            end
+        end
+    end)
+end
+
+local function DisableNoClip()
+    if noClipConnection then
+        noClipConnection:Disconnect()
+        noClipConnection = nil
+    end
+
+    local char = LocalPlayer.Character
+    if not char then return end
+
+    for part, properties in pairs(physicsParts) do
+        if part and part.Parent then
+            pcall(function()
+                part.CanCollide = properties.CanCollide
+                part.CanQuery = properties.CanQuery
+                part.Massless = properties.Massless
+            end)
+        end
+    end
+
+    physicsParts = {}
+end
+
+-- Enhanced anti-fall state management
+local function MaintainAntiFallState(enable)
+    local char = LocalPlayer.Character
+    local hum = char and char:FindFirstChild("Humanoid")
+    if not hum then return end
+
+    if enable then
+        local disabledStates = {
+            Enum.HumanoidStateType.Climbing,
+            Enum.HumanoidStateType.FallingDown,
+            Enum.HumanoidStateType.Flying,
+            Enum.HumanoidStateType.Freefall,
+            Enum.HumanoidStateType.GettingUp,
+            Enum.HumanoidStateType.Jumping,
+            Enum.HumanoidStateType.Landed,
+            Enum.HumanoidStateType.Physics,
+            Enum.HumanoidStateType.PlatformStanding,
+            Enum.HumanoidStateType.Ragdoll,
+            Enum.HumanoidStateType.Running,
+            Enum.HumanoidStateType.RunningNoPhysics,
+            Enum.HumanoidStateType.Seated,
+            Enum.HumanoidStateType.StrafingNoPhysics,
+            Enum.HumanoidStateType.Swimming
+        }
+
+        for _, state in ipairs(disabledStates) do
+            hum:SetStateEnabled(state, false)
+        end
+
+        if not stateConnection then
+            stateConnection = RunService.Heartbeat:Connect(function()
+                if hum and AUTO_9_TOTEM_ACTIVE then
+                    pcall(function()
+                        hum:ChangeState(Enum.HumanoidStateType.Swimming)
+                        hum:SetStateEnabled(Enum.HumanoidStateType.Swimming, true)
+                    end)
+                end
+            end)
+        end
+    else
+        if stateConnection then
+            stateConnection:Disconnect()
+            stateConnection = nil
+        end
+
+        local enabledStates = {
+            Enum.HumanoidStateType.Climbing,
+            Enum.HumanoidStateType.FallingDown,
+            Enum.HumanoidStateType.Freefall,
+            Enum.HumanoidStateType.Jumping,
+            Enum.HumanoidStateType.Landed,
+            Enum.HumanoidStateType.Physics,
+            Enum.HumanoidStateType.Ragdoll,
+            Enum.HumanoidStateType.Running
+        }
+
+        for _, state in ipairs(enabledStates) do
+            hum:SetStateEnabled(state, true)
+        end
+
+        pcall(function()
+            hum:ChangeState(Enum.HumanoidStateType.RunningNoPhysics)
+        end)
+    end
+end
+
+-- Enhanced physics system
+local function EnableV3Physics()
+    local char = LocalPlayer.Character
+    local hum = char and char:FindFirstChild("Humanoid")
+    local mainPart = GetFlyPart()
+
+    if not mainPart or not hum then return end
+
+    local animate = char:FindFirstChild("Animate")
+    if animate then animate.Disabled = true end
+
+    hum.PlatformStand = true
+
+    local existingGyro = mainPart:FindFirstChild("FlyGuiGyro")
+    local existingVelocity = mainPart:FindFirstChild("FlyGuiVelocity")
+
+    if existingGyro then existingGyro:Destroy() end
+    if existingVelocity then existingVelocity:Destroy() end
+
+    local bg = Instance.new("BodyGyro")
+    bg.Name = "FlyGuiGyro"
+    bg.P = 100000
+    bg.D = 1000
+    bg.maxTorque = Vector3.new(math.huge, math.huge, math.huge)
+    bg.CFrame = mainPart.CFrame
+    bg.Parent = mainPart
+
+    local bv = Instance.new("BodyVelocity")
+    bv.Name = "FlyGuiVelocity"
+    bv.Velocity = Vector3.new(0, 0.1, 0)
+    bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+    bv.Parent = mainPart
+
+    MaintainAntiFallState(true)
+    EnableNoClip()
+
+    print("V3 Physics enabled")
+end
+
+local function DisableV3Physics()
+    DisableNoClip()
+    MaintainAntiFallState(false)
+
+    local char = LocalPlayer.Character
+    if not char then return end
+
+    local hum = char:FindFirstChild("Humanoid")
+    local mainPart = GetFlyPart()
+
+    if mainPart then
+        local flyGyro = mainPart:FindFirstChild("FlyGuiGyro")
+        local flyVelocity = mainPart:FindFirstChild("FlyGuiVelocity")
+
+        if flyGyro then flyGyro:Destroy() end
+        if flyVelocity then flyVelocity:Destroy() end
+
+        mainPart.Velocity = Vector3.zero
+        mainPart.RotVelocity = Vector3.zero
+        mainPart.AssemblyLinearVelocity = Vector3.zero
+        mainPart.AssemblyAngularVelocity = Vector3.zero
+
+        local _, y, _ = mainPart.CFrame:ToEulerAnglesYXZ()
+        mainPart.CFrame = CFrame.new(mainPart.Position) * CFrame.fromEulerAnglesYXZ(0, y, 0)
+    end
+
+    if hum then
+        hum.PlatformStand = false
+        hum:ChangeState(Enum.HumanoidStateType.GettingUp)
+
+        local animate = char:FindFirstChild("Animate")
+        if animate then animate.Disabled = false end
+    end
+
+    print("V3 Physics disabled")
+end
+
+-- Enhanced flying function
+local function FlyPhysicsTo(targetPos)
+    local mainPart = GetFlyPart()
+    if not mainPart then return end
+
+    local bv = mainPart:FindFirstChild("FlyGuiVelocity")
+    local bg = mainPart:FindFirstChild("FlyGuiGyro")
+
+    if not bv or not bg then
+        EnableV3Physics()
+        bv = mainPart.FlyGuiVelocity
+        bg = mainPart.FlyGuiGyro
+    end
+
+    local SPEED = 120
+    local arrivalThreshold = 2.0
+
+    while AUTO_9_TOTEM_ACTIVE do
+        local char = LocalPlayer.Character
+        if not char then break end
+
+        local currentPos = mainPart.Position
+        local diff = targetPos - currentPos
+        local dist = diff.Magnitude
+
+        if dist > 1 then
+            bg.CFrame = CFrame.lookAt(currentPos, targetPos)
+        end
+
+        if dist < arrivalThreshold then
+            bv.Velocity = diff.Unit * math.min(SPEED, dist * 5)
+            if dist < 0.5 then
+                bv.Velocity = Vector3.new(0, 0.1, 0)
+                break
+            end
+        else
+            bv.Velocity = diff.Unit * SPEED
+        end
+
+        task.wait()
+    end
+end
+
+-- ==============================================================
+-- ===== 9 Totem Logic
+-- ==============================================================
+
+local function Run9TotemLoop()
+    if AUTO_9_TOTEM_THREAD then
+        task.cancel(AUTO_9_TOTEM_THREAD)
+    end
+
+    AUTO_9_TOTEM_THREAD = task.spawn(function()
+        local uuid = GetTotemUUID(selectedTotemName)
+        if not uuid then
+            print("❌ No totem available")
+            if totemToggle then
+                totemToggle:Set(false)
+            end
+            return
+        end
+
+        local char = LocalPlayer.Character
+        local hrp = char and char:FindFirstChild("HumanoidRootPart")
+        local hum = char and char:FindFirstChild("Humanoid")
+
+        if not hrp or not hum then
+            print("❌ Character not found")
+            if totemToggle then
+                totemToggle:Set(false)
+            end
+            return
+        end
+
+        print("✅ Starting 9 Totem Formation...")
+        local startPosition = hrp.Position
+
+        pcall(function()
+            Remote.EquipOxygen:InvokeServer(105)
+            print("✅ Oxygen tank equipped")
+        end)
+
+        hum.Health = hum.MaxHealth
+
+        EnableV3Physics()
+
+        for i, refSpot in ipairs(REF_SPOTS) do
+            if not AUTO_9_TOTEM_ACTIVE then
+                print("⚠️ Stopped by user")
+                break
+            end
+
+            print(string.format("📍 Moving to position %d/9", i))
+
+            local relativePos = refSpot - REF_CENTER
+            local targetPos = startPosition + relativePos
+
+            FlyPhysicsTo(targetPos)
+            print(string.format("✅ Arrived at position %d", i))
+
+            task.wait(0.8)
+
+            uuid = GetTotemUUID(selectedTotemName)
+            if uuid then
+                pcall(function()
+                    Modules.Net["RE/SpawnTotem"]:FireServer(uuid)
+                    print(string.format("✅ Totem %d spawned", i))
+                end)
+
+                task.spawn(function()
+                    for attempt = 1, 3 do
+                        pcall(function()
+                            Remote.EquipTool:FireServer(1)
+                            Remote.UnequipTool:FireServer(1)
+                        end)
+                        task.wait(0.15)
+                    end
+                end)
+            else
+                print("❌ Out of totems")
+                break
+            end
+
+            task.wait(1.2)
+        end
+
+        if AUTO_9_TOTEM_ACTIVE then
+            print("🔄 Returning to start position...")
+            FlyPhysicsTo(startPosition)
+            task.wait(0.8)
+        end
+
+        pcall(function()
+            Remote.UnequipOxygen:InvokeServer()
+            Remote.UnequipTool:FireServer(1)
+            print("✅ Oxygen tank unequipped")
+        end)
+
+        DisableV3Physics()
+
+        AUTO_9_TOTEM_ACTIVE = false
+
+        if totemToggle then
+            totemToggle:Set(false)
+        end
+
+        print("✅ 9 Totem Formation completed")
+        
+    end)
+end
+
+-- ==============================================================
+-- ===== UI Elements
+-- ==============================================================
+
+local totemToggle = nil
+
+Auto9Totem:AddDropdown({
+    Title = "Select Totem",
+    Options = TOTEM_NAMES,
+    Default = selectedTotemName,
+    Callback = function(name)
+        selectedTotemName = name
+        currentTotemExpiry = 0
+        print("Selected totem: " .. name)
+    end
+})
+
+totemToggle = Auto9Totem:AddToggle({
+    Title = "Spawn 9 Totem",
+    Default = false,
+    Callback = function(state)
+        AUTO_9_TOTEM_ACTIVE = state
+
+        if state then
+            print("Starting 9 Totem Formation...")
+            Remote.UnequipTool:FireServer(1)
+            Run9TotemLoop()
+        else
+            print("Stopping 9 Totem Formation...")
+            if AUTO_9_TOTEM_THREAD then
+                task.cancel(AUTO_9_TOTEM_THREAD)
+            end
+            DisableV3Physics()
+        end
+    end
+})
+
+Auto9Totem:AddButton({
+    Title = "Manual Stop & Reset",
+    Callback = function()
+        print("Manual reset triggered")
+        AUTO_9_TOTEM_ACTIVE = false
+        if AUTO_9_TOTEM_THREAD then
+            task.cancel(AUTO_9_TOTEM_THREAD)
+        end
+        DisableV3Physics()
+
+        if totemToggle then
+            totemToggle:Set(false)
+        end
+    end
+})
+
+
+-- ==============================================================
+-- ===== Cleanup System
+-- ==============================================================
+
+-- Cleanup when character changes
+LocalPlayer.CharacterAdded:Connect(function()
+    print("Character changed, resetting...")
+    if AUTO_9_TOTEM_ACTIVE then
+        AUTO_9_TOTEM_ACTIVE = false
+        if totemToggle then
+            totemToggle:Set(false)
+        end
+    end
+    DisableV3Physics()
+end)
+
+LocalPlayer.CharacterRemoving:Connect(function()
+    print("Character removing, cleaning up...")
+    if AUTO_9_TOTEM_ACTIVE then
+        AUTO_9_TOTEM_ACTIVE = false
+        if totemToggle then
+            totemToggle:Set(false)
+        end
+    end
+    DisableV3Physics()
+end)
+
+-- Cleanup on script end
+Services.LocalPlayer:WaitForChild("PlayerGui").ChildRemoved:Connect(function(child)
+    if child.Name == "ArtHubUI" then -- Adjust this to your UI name
+        print("UI closed, cleaning up...")
+        AUTO_9_TOTEM_ACTIVE = false
+
+        -- Cleanup all connections
+        if stateConnection then
+            stateConnection:Disconnect()
+            stateConnection = nil
+        end
+
+        if noClipConnection then
+            noClipConnection:Disconnect()
+            noClipConnection = nil
+        end
+
+        DisableV3Physics()
+    end
+end)
+
+local waterPlatform = nil
+local walkOnWaterConnection = nil
+
+local listEvent = {
+    "Megalodon Hunt",
+    "Ghost Shark Hunt",
+    "Shark Hunt",
+    "Worm Hunt",
+    "Treasure Hunt"
+}
+local SelectEventTele = "No Event"
+
+TeleEvent:AddDropdown({
+    Title = "Select Event",
+    Options = listEvent,
+    Default = SelectEventTele,
+    Callback = function(name)
+        SelectEventTele = name
+    end
+})
+
+TeleEvent:AddToggle({
+    Title = "Start Auto Event",
+    Default = false,
+    Callback = function(val)
+        _G.AutoEventLoop = val
+        
+        if _G.AutoEventLoop then
+            local hasTeleported = false
+            local oldPosition = nil -- Variabel untuk menyimpan posisi awal
+
+            task.spawn(function()
+                while _G.AutoEventLoop do
+                    local character = Services.LocalPlayer.Character
+                    local hrp = character and character:FindFirstChild("HumanoidRootPart")
+                    
+                    if hrp then
+                        -- 1. Logika Walk On Water
+                        if not waterPlatform then
+                            waterPlatform = Instance.new("Part")
+                            waterPlatform.Name = "WaterPlatform"
+                            waterPlatform.Anchored = true
+                            waterPlatform.CanCollide = true
+                            waterPlatform.Transparency = 1
+                            waterPlatform.Size = Vector3.new(25, 1, 25)
+                            waterPlatform.Parent = workspace
+                        end
+
+                        if not walkOnWaterConnection then
+                            walkOnWaterConnection = Services.RunService.RenderStepped:Connect(function()
+                                if not _G.AutoEventLoop or not hrp or not waterPlatform then return end
+                                local rayParams = RaycastParams.new()
+                                rayParams.FilterDescendantsInstances = { workspace.Terrain }
+                                rayParams.FilterType = Enum.RaycastFilterType.Include
+                                rayParams.IgnoreWater = false
+
+                                local result = workspace:Raycast(hrp.Position + Vector3.new(0, 5, 0), Vector3.new(0, -500, 0), rayParams)
+                                if result and result.Material == Enum.Material.Water then
+                                    local waterY = result.Position.Y
+                                    waterPlatform.Position = Vector3.new(hrp.Position.X, waterY, hrp.Position.Z)
+                                    if hrp.Position.Y < waterY + 2 and hrp.Position.Y > waterY - 5 then
+                                        if not UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+                                            hrp.CFrame = CFrame.new(hrp.Position.X, waterY + 3.2, hrp.Position.Z)
+                                        end
+                                    end
+                                else
+                                    waterPlatform.Position = Vector3.new(hrp.Position.X, -500, hrp.Position.Z)
+                                end
+                            end)
+                        end
+
+                        -- 2. Logika Auto Teleport & Auto Return
+                        if SelectEventTele ~= "No Event" then
+                            local targetObj = workspace:FindFirstChild(SelectEventTele, true) or 
+                                             (workspace:FindFirstChild("Props") and workspace.Props:FindFirstChild(SelectEventTele, true))
+                            
+                            if targetObj and not hasTeleported then
+                                -- Simpan posisi sebelum pergi
+                                oldPosition = hrp.CFrame
+                                
+                                -- Teleport ke Event (+50 Studs)
+                                hrp.CFrame = targetObj:GetPivot() * CFrame.new(0, 50, 0)
+                                hasTeleported = true
+                                
+                                task.delay(0.5, function()
+                                    local prompt = targetObj:FindFirstChildWhichIsA("ProximityPrompt", true)
+                                    if prompt then fireproximityprompt(prompt) end
+                                end)
+                                
+                            elseif not targetObj and hasTeleported then
+                                -- JIKA EVENT HABIS (Objek hilang)
+                                if oldPosition then
+                                    hrp.CFrame = oldPosition -- Balik ke posisi semula
+                                    oldPosition = nil -- Reset posisi simpanan
+                                end
+                                hasTeleported = false
+                            end
+                        end
+                    end
+                    task.wait(1)
+                end
+            end)
+        else
+            -- 3. Cleanup
+            if walkOnWaterConnection then
+                walkOnWaterConnection:Disconnect()
+                walkOnWaterConnection = nil
+            end
+            if waterPlatform then
+                waterPlatform:Destroy()
+                waterPlatform = nil
+            end
+        end
+    end
+})
+
+
+task.spawn(RefreshMerchant)
+task.spawn(function()
+    while true do
+        if Config.Auto.Favorite.Enabled then
+            pcall(ProcessAutoFavorite)
+        end
+        task.wait(3)
+    end
+end)
