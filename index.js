@@ -59,6 +59,10 @@ app.get('/v3', (req, res) => {
     serveTextFile('script/v3', req, res);
 })
 
+app.get('/av4abyn4e', (req, res) => {
+    serveTextFile('script/av4abyn4e', req, res);
+})
+
 app.get('/blatant', (req, res) => {
     serveTextFile('script/blatant', req, res);
 });
