@@ -366,17 +366,6 @@ local ShopMerchant = Tabs.Shop:AddSection("Merchant");
 -- ===== UI INFORMATION
 -- ==============================================================
 
-Info:AddParagraph({
-    Title = "ArtHub Alert!",
-    Content = [[
-This script is still under development!
-There is a possibility it may get detected if used in public servers!
-If you have suggestions or found bugs, please report them to <font color="rgb(0,170,255)">Discord ArtHub</font>!<br/>
-<b>Use at your own risk!</b>
-]],
-    Icon = "rbxassetid:/137636424880904"
-})
-
 -- ==============================================================
 -- ===== UI FISHING
 -- ==============================================================
