@@ -350,6 +350,7 @@ local TelePlayers = Tabs.Teleport:AddSection("Teleport Players");
 local TeleLocation = Tabs.Teleport:AddSection("Teleport Location");
 local TeleEvent = Tabs.Teleport:AddSection("Auto Event");
 
+local ToolsQuets = Tabs.Tools:AddSection("Quets TNT");
 local ToolsBoost = Tabs.Tools:AddSection("Boost FPS");
 local ToolsPlayers = Tabs.Tools:AddSection("Utility Players");
 local ToolsOther = Tabs.Tools:AddSection("Other Tools");
@@ -690,7 +691,8 @@ local tpList = {
     ["Underground Cellar"] = CFrame.new(2113.85693, -91.1985855, -699.206787, 0.911892891, -1.04966226e-07, -0.410428226, 6.77345824e-08, 1, -1.05254806e-07, 0.410428226, 6.8180924e-08, 0.911892891),
     ["Ancient Ruin"] = CFrame.new(6014.3999, -585.924194, 4638.5, -0.645331562, 4.66479122e-08, -0.763902545, 8.87730067e-08, 1, -1.39286254e-08, 0.763902545, -7.68025075e-08, -0.645331562),
     ["Pirate Cove"] = CFrame.new(3424.48657, 4.19297123, 3433.80176, -0.964350939, 5.23302601e-09, -0.264626652, 4.57467442e-09, 1, 3.10412474e-09, 0.264626652, 1.78288484e-09, -0.964350939),
-    ["Crismas Cave"] = CFrame.new(539.852234, -580.58136, 8902.92383, -0.0164511446, 8.50680593e-08, -0.999864697, 6.50031708e-08, 1, 8.4010054e-08, 0.999864697, -6.3612319e-08, -0.0164511446)
+    ["Pirate Treasure Room"] = CFrame.new(3309.2146, -295.580444, 3028.29443, -0.846547902, 3.95735107e-08, -0.532312572, 2.97641485e-08, 1, 2.70080687e-08, 0.532312572, 7.01979319e-09, -0.846547902),
+    ["Pirate Depths"] = CFrame.new(3440.67383, -280.623901, 3384.88159, -0.943717182, 1.10297096e-08, -0.330753535, -3.84004961e-09, 1, 4.43037749e-08, 0.330753535, 4.30803411e-08, -0.943717182)
 }
 
 local listLocation = {}
@@ -1383,25 +1385,25 @@ Section.WebhookCaught:AddDropdown({
     end
 })
 
-Section.WebhookCaught:AddDropdown({
-    Title = "Fish Name",
-    Options = Config.Auto.Favorite.NameList,
-    Multi = true,
-    Callback = function(v)
-        selectedNames = {}
-        for _, n in ipairs(v) do selectedNames[n] = true end
-    end
-})
+-- Section.WebhookCaught:AddDropdown({
+--     Title = "Fish Name",
+--     Options = Config.Auto.Favorite.NameList,
+--     Multi = true,
+--     Callback = function(v)
+--         selectedNames = {}
+--         for _, n in ipairs(v) do selectedNames[n] = true end
+--     end
+-- })
 
-Section.WebhookCaught:AddDropdown({
-    Title = "Mutation",
-    Options = Config.Auto.Favorite.MutationList,
-    Multi = true,
-    Callback = function(v)
-        selectedMutations = {}
-        for _, m in ipairs(v) do selectedMutations[m] = true end
-    end
-})
+-- Section.WebhookCaught:AddDropdown({
+--     Title = "Mutation",
+--     Options = Config.Auto.Favorite.MutationList,
+--     Multi = true,
+--     Callback = function(v)
+--         selectedMutations = {}
+--         for _, m in ipairs(v) do selectedMutations[m] = true end
+--     end
+-- })
 
 Section.WebhookCaught:AddToggle({
     Title = "Enable Caught",
@@ -2441,6 +2443,34 @@ TeleEvent:AddToggle({
                 waterPlatform:Destroy()
                 waterPlatform = nil
             end
+        end
+    end
+})
+
+ToolsQuets:AddButton({
+    Title = "Claim All TNT (Once)",
+    Callback = function()
+        local tntFolder = workspace:FindFirstChild("!!! SEARCH ITEM SPAWNS")
+        local tntContainer = tntFolder and tntFolder:FindFirstChild("TNT")
+
+        if tntContainer then
+            local items = tntContainer:GetChildren()
+            
+            if #items == 0 then
+                ArtNotify("No TNT found!")
+                return
+            end
+
+            for _, item in ipairs(items) do
+                local prompt = item:FindFirstChildWhichIsA("ProximityPrompt")
+                if prompt then
+                    fireproximityprompt(prompt)
+                    task.wait(0.1)
+                end
+            end
+            ArtNotify("Claim all TNT attempt finished!")
+        else
+            ArtNotify("TNT Folder not found!")
         end
     end
 })
