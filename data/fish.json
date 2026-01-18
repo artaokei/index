@@ -1,0 +1,2366 @@
+[
+    {
+        "Icon": "130761855658346",
+        "Name": "Reef Chromis",
+        "Tier": 1
+    },
+    {
+        "Icon": "140212951494890",
+        "Name": "Abyss Seahorse",
+        "Tier": 5
+    },
+    {
+        "Icon": "89467763428838",
+        "Name": "Ash Basslet",
+        "Tier": 1
+    },
+    {
+        "Icon": "80597542368624",
+        "Name": "Astra Damsel",
+        "Tier": 4
+    },
+    {
+        "Icon": "82037285284063",
+        "Name": "Azure Damsel",
+        "Tier": 1
+    },
+    {
+        "Icon": "108599906664305",
+        "Name": "Banded Butterfly",
+        "Tier": 2
+    },
+    {
+        "Icon": "79569787883962",
+        "Name": "Blue Lobster",
+        "Tier": 4
+    },
+    {
+        "Icon": "113303332536600",
+        "Name": "Blueflame Ray",
+        "Tier": 5
+    },
+    {
+        "Icon": "132840818442941",
+        "Name": "Boa Angelfish",
+        "Tier": 1
+    },
+    {
+        "Icon": "138718017852833",
+        "Name": "Bumblebee Grouper",
+        "Tier": 4
+    },
+    {
+        "Icon": "118627817589849",
+        "Name": "Candy Butterfly",
+        "Tier": 2
+    },
+    {
+        "Icon": "115703943090504",
+        "Name": "Charmed Tang",
+        "Tier": 3
+    },
+    {
+        "Icon": "103021560011734",
+        "Name": "Chrome Tuna",
+        "Tier": 4
+    },
+    {
+        "Icon": "98117815811053",
+        "Name": "Clownfish",
+        "Tier": 1
+    },
+    {
+        "Icon": "92488575546885",
+        "Name": "Coal Tang",
+        "Tier": 2
+    },
+    {
+        "Icon": "79518413256091",
+        "Name": "Copperband Butterfly",
+        "Tier": 2
+    },
+    {
+        "Icon": "117026260439113",
+        "Name": "Corazon Damsel",
+        "Tier": 1
+    },
+    {
+        "Icon": "88952725333000",
+        "Name": "Cow Clownfish",
+        "Tier": 4
+    },
+    {
+        "Icon": "109996187340520",
+        "Name": "Darwin Clownfish",
+        "Tier": 3
+    },
+    {
+        "Icon": "100965955122629",
+        "Name": "Domino Damsel",
+        "Tier": 4
+    },
+    {
+        "Icon": "136891625122640",
+        "Name": "Dorhey Tang",
+        "Tier": 4
+    },
+    {
+        "Icon": "132465838670740",
+        "Name": "Dotted Stingray",
+        "Tier": 5
+    },
+    {
+        "Icon": "108347802265821",
+        "Name": "Enchanted Angelfish",
+        "Tier": 4
+    },
+    {
+        "Icon": "94533805203782",
+        "Name": "Fire Goby",
+        "Tier": 2
+    },
+    {
+        "Icon": "108870635586928",
+        "Name": "Firecoal Damsel",
+        "Tier": 4
+    },
+    {
+        "Icon": "128385926161840",
+        "Name": "Flame Angelfish",
+        "Tier": 2
+    },
+    {
+        "Icon": "79015880866732",
+        "Name": "Greenbee Grouper",
+        "Tier": 4
+    },
+    {
+        "Icon": "91373020648344",
+        "Name": "Hammerhead Shark",
+        "Tier": 5
+    },
+    {
+        "Icon": "129453304232199",
+        "Name": "Hawks Turtle",
+        "Tier": 5
+    },
+    {
+        "Icon": "129447526017878",
+        "Name": "Starjam Tang",
+        "Tier": 4
+    },
+    {
+        "Icon": "82888113748973",
+        "Name": "Jennifer Dottyback",
+        "Tier": 1
+    },
+    {
+        "Icon": "130344776739450",
+        "Name": "Jewel Tang",
+        "Tier": 2
+    },
+    {
+        "Icon": "120735400809864",
+        "Name": "Kau Cardinal",
+        "Tier": 3
+    },
+    {
+        "Icon": "134484917450451",
+        "Name": "Korean Angelfish",
+        "Tier": 3
+    },
+    {
+        "Icon": "96111934641941",
+        "Name": "Lavafin Tuna",
+        "Tier": 4
+    },
+    {
+        "Icon": "106973499045957",
+        "Name": "Lobster",
+        "Tier": 4
+    },
+    {
+        "Icon": "91953712080535",
+        "Name": "Loggerhead Turtle",
+        "Tier": 5
+    },
+    {
+        "Icon": "78488362036598",
+        "Name": "Longnose Butterfly",
+        "Tier": 4
+    },
+    {
+        "Icon": "88573644059627",
+        "Name": "Magic Tang",
+        "Tier": 4
+    },
+    {
+        "Icon": "136836819813966",
+        "Name": "Magma Goby",
+        "Tier": 2
+    },
+    {
+        "Icon": "88385941559907",
+        "Name": "Manta Ray",
+        "Tier": 5
+    },
+    {
+        "Icon": "137187990814642",
+        "Name": "Maroon Butterfly",
+        "Tier": 4
+    },
+    {
+        "Icon": "133123622412997",
+        "Name": "Maze Angelfish",
+        "Tier": 3
+    },
+    {
+        "Icon": "99527607304877",
+        "Name": "Moorish Idol",
+        "Tier": 4
+    },
+    {
+        "Icon": "86776001616210",
+        "Name": "Bandit Angelfish",
+        "Tier": 2
+    },
+    {
+        "Icon": "80869011808607",
+        "Name": "Zoster Butterfly",
+        "Tier": 1
+    },
+    {
+        "Icon": "80870534603019",
+        "Name": "Orangy Goby",
+        "Tier": 1
+    },
+    {
+        "Icon": "110559683316227",
+        "Name": "Panther Grouper",
+        "Tier": 4
+    },
+    {
+        "Icon": "105300029672501",
+        "Name": "Prismy Seahorse",
+        "Tier": 5
+    },
+    {
+        "Icon": "90918658215983",
+        "Name": "Scissortail Dartfish",
+        "Tier": 2
+    },
+    {
+        "Icon": "79722493639079",
+        "Name": "Shrimp Goby",
+        "Tier": 2
+    },
+    {
+        "Icon": "117649671337741",
+        "Name": "Skunk Tilefish",
+        "Tier": 1
+    },
+    {
+        "Icon": "116155560772333",
+        "Name": "Specked Butterfly",
+        "Tier": 1
+    },
+    {
+        "Icon": "113189737934915",
+        "Name": "Strawberry Dotty",
+        "Tier": 1
+    },
+    {
+        "Icon": "104436232234256",
+        "Name": "Sushi Cardinal",
+        "Tier": 4
+    },
+    {
+        "Icon": "138769463668635",
+        "Name": "Tricolore Butterfly",
+        "Tier": 2
+    },
+    {
+        "Icon": "85435653124474",
+        "Name": "Unicorn Tang",
+        "Tier": 4
+    },
+    {
+        "Icon": "136876564868613",
+        "Name": "Vintage Blue Tang",
+        "Tier": 1
+    },
+    {
+        "Icon": "135465556501628",
+        "Name": "Vintage Damsel",
+        "Tier": 2
+    },
+    {
+        "Icon": "73441603866106",
+        "Name": "Volcanic Basslet",
+        "Tier": 1
+    },
+    {
+        "Icon": "94709558139061",
+        "Name": "White Clownfish",
+        "Tier": 2
+    },
+    {
+        "Icon": "125066072333378",
+        "Name": "Yello Damselfish",
+        "Tier": 2
+    },
+    {
+        "Icon": "86565235696991",
+        "Name": "Yellowfin Tuna",
+        "Tier": 4
+    },
+    {
+        "Icon": "82807541331151",
+        "Name": "Yellowstate Angelfish",
+        "Tier": 1
+    },
+    {
+        "Icon": "125238936461158",
+        "Name": "Salmon",
+        "Tier": 2
+    },
+    {
+        "Icon": "120294742064292",
+        "Name": "Blob Shark",
+        "Tier": 7
+    },
+    {
+        "Icon": "129946055426678",
+        "Name": "Volsail Tang",
+        "Tier": 3
+    },
+    {
+        "Icon": "120329148296828",
+        "Name": "Rockform Cardianl",
+        "Tier": 3
+    },
+    {
+        "Icon": "121441755541039",
+        "Name": "Lava Butterfly",
+        "Tier": 2
+    },
+    {
+        "Icon": "73157781682607",
+        "Name": "Slurpfish Chromis",
+        "Tier": 2
+    },
+    {
+        "Icon": "131719468046777",
+        "Name": "Festive Goby",
+        "Tier": 1
+    },
+    {
+        "Icon": "119896827350397",
+        "Name": "Mistletoe Damsel",
+        "Tier": 1
+    },
+    {
+        "Icon": "81165959957452",
+        "Name": "Gingerbread Tang",
+        "Tier": 1
+    },
+    {
+        "Icon": "71302255255094",
+        "Name": "Great Christmas Whale",
+        "Tier": 7
+    },
+    {
+        "Icon": "76627481663195",
+        "Name": "Gingerbread Clownfish",
+        "Tier": 2
+    },
+    {
+        "Icon": "105391647263950",
+        "Name": "Gingerbread Turtle",
+        "Tier": 5
+    },
+    {
+        "Icon": "134485196164902",
+        "Name": "Gingerbread Shark",
+        "Tier": 6
+    },
+    {
+        "Icon": "121538254026074",
+        "Name": "Christmastree Longnose",
+        "Tier": 3
+    },
+    {
+        "Icon": "81306607650028",
+        "Name": "Candycane Lobster",
+        "Tier": 4
+    },
+    {
+        "Icon": "111730193849173",
+        "Name": "Festive Pufferfish",
+        "Tier": 4
+    },
+    {
+        "Icon": "137187691311291",
+        "Name": "Blue-Banded Goby",
+        "Tier": 2
+    },
+    {
+        "Icon": "135433263876257",
+        "Name": "Blumato Clownfish",
+        "Tier": 2
+    },
+    {
+        "Icon": "70666845671780",
+        "Name": "Conspi Angelfish",
+        "Tier": 1
+    },
+    {
+        "Icon": "99713500880459",
+        "Name": "Fade Tang",
+        "Tier": 1
+    },
+    {
+        "Icon": "96973556889996",
+        "Name": "Lined Cardinal Fish",
+        "Tier": 5
+    },
+    {
+        "Icon": "85192354177842",
+        "Name": "Masked Angelfish",
+        "Tier": 1
+    },
+    {
+        "Icon": "128173847216247",
+        "Name": "Pygmy Goby",
+        "Tier": 1
+    },
+    {
+        "Icon": "86089485683202",
+        "Name": "Sail Tang",
+        "Tier": 1
+    },
+    {
+        "Icon": "133021124365377",
+        "Name": "Watanabei Angelfish",
+        "Tier": 1
+    },
+    {
+        "Icon": "138516719984773",
+        "Name": "White Tang",
+        "Tier": 1
+    },
+    {
+        "Icon": "99236757363784",
+        "Name": "Ballina Angelfish",
+        "Tier": 3
+    },
+    {
+        "Icon": "116977046936052",
+        "Name": "Bleekers Damsel",
+        "Tier": 2
+    },
+    {
+        "Icon": "119173750281399",
+        "Name": "Loving Shark",
+        "Tier": 6
+    },
+    {
+        "Icon": "76606007357699",
+        "Name": "Pink Smith Damsel",
+        "Tier": 2
+    },
+    {
+        "Icon": "76558551981982",
+        "Name": "Axolotl",
+        "Tier": 4
+    },
+    {
+        "Icon": "84055400571306",
+        "Name": "Silver Tuna",
+        "Tier": 2
+    },
+    {
+        "Icon": "114269547366510",
+        "Name": "Pilot Fish",
+        "Tier": 2
+    },
+    {
+        "Icon": "118534942671075",
+        "Name": "Patriot Tang",
+        "Tier": 1
+    },
+    {
+        "Icon": "125463067542850",
+        "Name": "Frostborn Shark",
+        "Tier": 7
+    },
+    {
+        "Icon": "88847410678758",
+        "Name": "Plasma Shark",
+        "Tier": 5
+    },
+    {
+        "Icon": "88950964359044",
+        "Name": "Pufferfish",
+        "Tier": 4
+    },
+    {
+        "Icon": "92680808637130",
+        "Name": "Racoon Butterfly Fish",
+        "Tier": 2
+    },
+    {
+        "Icon": "129792505755834",
+        "Name": "Orange Basslet",
+        "Tier": 2
+    },
+    {
+        "Icon": "120444751052938",
+        "Name": "Strippled Seahorse",
+        "Tier": 5
+    },
+    {
+        "Icon": "70681751795899",
+        "Name": "Thresher Shark",
+        "Tier": 5
+    },
+    {
+        "Icon": "110349456710432",
+        "Name": "Great Whale",
+        "Tier": 7
+    },
+    {
+        "Icon": "132331063285672",
+        "Name": "Viperfish",
+        "Tier": 2
+    },
+    {
+        "Icon": "107492220673765",
+        "Name": "Deep Sea Crab",
+        "Tier": 5
+    },
+    {
+        "Icon": "121295544969455",
+        "Name": "Spotted Lantern Fish",
+        "Tier": 2
+    },
+    {
+        "Icon": "80927639907406",
+        "Name": "Robot Kraken",
+        "Tier": 7
+    },
+    {
+        "Icon": "117683281700675",
+        "Name": "Monk Fish",
+        "Tier": 4
+    },
+    {
+        "Icon": "136951139611035",
+        "Name": "King Crab",
+        "Tier": 6
+    },
+    {
+        "Icon": "115477999636961",
+        "Name": "Jellyfish",
+        "Tier": 3
+    },
+    {
+        "Icon": "135470649745250",
+        "Name": "Giant Squid",
+        "Tier": 7
+    },
+    {
+        "Icon": "82285034746187",
+        "Name": "Fangtooth",
+        "Tier": 4
+    },
+    {
+        "Icon": "112551199622795",
+        "Name": "Electric Eel",
+        "Tier": 1
+    },
+    {
+        "Icon": "87203317027314",
+        "Name": "Vampire Squid",
+        "Tier": 4
+    },
+    {
+        "Icon": "135880333888900",
+        "Name": "Dark Eel",
+        "Tier": 2
+    },
+    {
+        "Icon": "114009571858522",
+        "Name": "Boar Fish",
+        "Tier": 1
+    },
+    {
+        "Icon": "109329387304752",
+        "Name": "Blob Fish",
+        "Tier": 6
+    },
+    {
+        "Icon": "95565358831204",
+        "Name": "Angler Fish",
+        "Tier": 4
+    },
+    {
+        "Icon": "72777968915255",
+        "Name": "Dead Fish",
+        "Tier": 1
+    },
+    {
+        "Icon": "110090152643341",
+        "Name": "Skeleton Fish",
+        "Tier": 1
+    },
+    {
+        "Icon": "105539179190905",
+        "Name": "Swordfish",
+        "Tier": 2
+    },
+    {
+        "Icon": "88157067345872",
+        "Name": "Worm Fish",
+        "Tier": 7
+    },
+    {
+        "Icon": "88961987133136",
+        "Name": "Rockfish",
+        "Tier": 2
+    },
+    {
+        "Icon": "112711438552296",
+        "Name": "Sheepshead Fish",
+        "Tier": 3
+    },
+    {
+        "Icon": "95659897738388",
+        "Name": "Blackcap Basslet",
+        "Tier": 2
+    },
+    {
+        "Icon": "98970734819318",
+        "Name": "Catfish",
+        "Tier": 3
+    },
+    {
+        "Icon": "126049387807805",
+        "Name": "Coney Fish",
+        "Tier": 3
+    },
+    {
+        "Icon": "84444153694943",
+        "Name": "Hermit Crab",
+        "Tier": 6
+    },
+    {
+        "Icon": "101895900955177",
+        "Name": "Crater Fish",
+        "Tier": 2
+    },
+    {
+        "Icon": "73709080100110",
+        "Name": "Queen Crab",
+        "Tier": 7
+    },
+    {
+        "Icon": "70818316245817",
+        "Name": "Red Snapper",
+        "Tier": 2
+    },
+    {
+        "Icon": "91608917361161",
+        "Name": "Lake Sturgeon",
+        "Tier": 5
+    },
+    {
+        "Icon": "120876783250189",
+        "Name": "Orca",
+        "Tier": 7
+    },
+    {
+        "Icon": "109111807975453",
+        "Name": "Barracuda Fish",
+        "Tier": 3
+    },
+    {
+        "Icon": "110188263756245",
+        "Name": "Crystal Crab",
+        "Tier": 7
+    },
+    {
+        "Icon": "71290852112649",
+        "Name": "Frog",
+        "Tier": 3
+    },
+    {
+        "Icon": "116893747982628",
+        "Name": "Gar Fish",
+        "Tier": 2
+    },
+    {
+        "Icon": "83087225269219",
+        "Name": "Herring Fish",
+        "Tier": 1
+    },
+    {
+        "Icon": "82928155035287",
+        "Name": "Dark Tentacle",
+        "Tier": 3
+    },
+    {
+        "Icon": "72446028934813",
+        "Name": "Flat Fish",
+        "Tier": 2
+    },
+    {
+        "Icon": "76398271598694",
+        "Name": "Flying Fish",
+        "Tier": 2
+    },
+    {
+        "Icon": "92595165502684",
+        "Name": "Lion Fish",
+        "Tier": 2
+    },
+    {
+        "Icon": "93878183859150",
+        "Name": "Starfish",
+        "Tier": 3
+    },
+    {
+        "Icon": "88311721896238",
+        "Name": "Wahoo",
+        "Tier": 2
+    },
+    {
+        "Icon": "102132456822726",
+        "Name": "Saw Fish",
+        "Tier": 5
+    },
+    {
+        "Icon": "86256600614394",
+        "Name": "Pink Dolphin",
+        "Tier": 4
+    },
+    {
+        "Icon": "109551787474599",
+        "Name": "Monster Shark",
+        "Tier": 7
+    },
+    {
+        "Icon": "78374908088019",
+        "Name": "Luminous Fish",
+        "Tier": 6
+    },
+    {
+        "Icon": "114252804065144",
+        "Name": "Eerie Shark",
+        "Tier": 7
+    },
+    {
+        "Icon": "76893887663677",
+        "Name": "Scare",
+        "Tier": 7
+    },
+    {
+        "Icon": "115468864043768",
+        "Name": "Synodontis",
+        "Tier": 5
+    },
+    {
+        "Icon": "130020230064983",
+        "Name": "Armor Catfish",
+        "Tier": 6
+    },
+    {
+        "Icon": "123540389497955",
+        "Name": "Thin Armor Shark",
+        "Tier": 7
+    },
+    {
+        "Icon": "128440123940426",
+        "Name": "Narwhal",
+        "Tier": 4
+    },
+    {
+        "Icon": "88964613838360",
+        "Name": "Lochness Monster",
+        "Tier": 7
+    },
+    {
+        "Icon": "82143322416088",
+        "Name": "Antique Cup",
+        "Tier": 3
+    },
+    {
+        "Icon": "93941516308809",
+        "Name": "Antique Watch",
+        "Tier": 3
+    },
+    {
+        "Icon": "140728296641493",
+        "Name": "Sea Shell",
+        "Tier": 2
+    },
+    {
+        "Icon": "83797707479837",
+        "Name": "Pearl",
+        "Tier": 3
+    },
+    {
+        "Icon": "128215101057455",
+        "Name": "Old Boot",
+        "Tier": 1
+    },
+    {
+        "Icon": "110245463690177",
+        "Name": "Expensive Chain",
+        "Tier": 4
+    },
+    {
+        "Icon": "110991359455743",
+        "Name": "Diamond Ring",
+        "Tier": 5
+    },
+    {
+        "Icon": "139285110672806",
+        "Name": "Conch Shell",
+        "Tier": 2
+    },
+    {
+        "Icon": "126066407227328",
+        "Name": "Megalodon",
+        "Tier": 7
+    },
+    {
+        "Icon": "81593253309929",
+        "Name": "Arowana",
+        "Tier": 2
+    },
+    {
+        "Icon": "86941108969730",
+        "Name": "King Mackerel",
+        "Tier": 3
+    },
+    {
+        "Icon": "133485972581430",
+        "Name": "Magma Shark",
+        "Tier": 6
+    },
+    {
+        "Icon": "91295888272023",
+        "Name": "Ruby",
+        "Tier": 5
+    },
+    {
+        "Icon": "79899223576801",
+        "Name": "Abyshorn Fish",
+        "Tier": 2
+    },
+    {
+        "Icon": "84629313345829",
+        "Name": "Sharp One",
+        "Tier": 6
+    },
+    {
+        "Icon": "97369977225977",
+        "Name": "Hybodus Shark",
+        "Tier": 6
+    },
+    {
+        "Icon": "101328665301159",
+        "Name": "Panther Eel",
+        "Tier": 6
+    },
+    {
+        "Icon": "102028503382077",
+        "Name": "Ghost Shark",
+        "Tier": 7
+    },
+    {
+        "Icon": "107896897205452",
+        "Name": "Ghost Worm Fish",
+        "Tier": 7
+    },
+    {
+        "Icon": "122319387402990",
+        "Name": "Zebra Snakehead",
+        "Tier": 2
+    },
+    {
+        "Icon": "96051341080933",
+        "Name": "Waveback Fish",
+        "Tier": 1
+    },
+    {
+        "Icon": "89886287478220",
+        "Name": "Crocodile",
+        "Tier": 6
+    },
+    {
+        "Icon": "134552782408906",
+        "Name": "Viperangler Fish",
+        "Tier": 3
+    },
+    {
+        "Icon": "85353973924965",
+        "Name": "Temple Spokes Tuna",
+        "Tier": 5
+    },
+    {
+        "Icon": "98723587624430",
+        "Name": "Spear Guardian",
+        "Tier": 4
+    },
+    {
+        "Icon": "72285613528111",
+        "Name": "Skeleton Angler Fish",
+        "Tier": 4
+    },
+    {
+        "Icon": "86952015220017",
+        "Name": "Sail Fish",
+        "Tier": 2
+    },
+    {
+        "Icon": "129358445149074",
+        "Name": "Sacred Guardian Squid",
+        "Tier": 5
+    },
+    {
+        "Icon": "97194596437636",
+        "Name": "Runic Wispeye",
+        "Tier": 1
+    },
+    {
+        "Icon": "87364367503847",
+        "Name": "Red Goatfish",
+        "Tier": 2
+    },
+    {
+        "Icon": "90145730610071",
+        "Name": "Parrot Fish",
+        "Tier": 3
+    },
+    {
+        "Icon": "138560606706748",
+        "Name": "Mossy Fishlet",
+        "Tier": 3
+    },
+    {
+        "Icon": "83287284251523",
+        "Name": "Ancient Arapaima",
+        "Tier": 2
+    },
+    {
+        "Icon": "112056031966357",
+        "Name": "Manoai Statue Fish",
+        "Tier": 5
+    },
+    {
+        "Icon": "113683047681103",
+        "Name": "Mammoth Appafish",
+        "Tier": 6
+    },
+    {
+        "Icon": "79451780989889",
+        "Name": "Goliath Tiger",
+        "Tier": 4
+    },
+    {
+        "Icon": "122849883484708",
+        "Name": "Ancient Lochness Monster",
+        "Tier": 7
+    },
+    {
+        "Icon": "88963984435830",
+        "Name": "Drippy Tucanare",
+        "Tier": 2
+    },
+    {
+        "Icon": "104757933481327",
+        "Name": "King Jelly",
+        "Tier": 7
+    },
+    {
+        "Icon": "85346893566616",
+        "Name": "Beanie Leedsicheye",
+        "Tier": 1
+    },
+    {
+        "Icon": "131025252592514",
+        "Name": "Ancient Relic Crocodile",
+        "Tier": 6
+    },
+    {
+        "Icon": "99804145194043",
+        "Name": "Bone Whale",
+        "Tier": 7
+    },
+    {
+        "Icon": "119021943786069",
+        "Name": "Mosasaur Shark",
+        "Tier": 7
+    },
+    {
+        "Icon": "115522161459382",
+        "Name": "Elshark Gran Maja",
+        "Tier": 7
+    },
+    {
+        "Icon": "118434158055629",
+        "Name": "Water Snake",
+        "Tier": 2
+    },
+    {
+        "Icon": "106712272327597",
+        "Name": "Ancient Whale",
+        "Tier": 7
+    },
+    {
+        "Icon": "129118256536866",
+        "Name": "Crystal Salamander",
+        "Tier": 5
+    },
+    {
+        "Icon": "130326949380133",
+        "Name": "Dead Scary Clownfish",
+        "Tier": 2
+    },
+    {
+        "Icon": "94754294966347",
+        "Name": "Dead Spooky Koi Fish",
+        "Tier": 4
+    },
+    {
+        "Icon": "74502211632455",
+        "Name": "Dead Zombie Shark",
+        "Tier": 7
+    },
+    {
+        "Icon": "110367503006917",
+        "Name": "Pumpkin Jellyfish",
+        "Tier": 5
+    },
+    {
+        "Icon": "118734586270295",
+        "Name": "Scary Clownfish",
+        "Tier": 2
+    },
+    {
+        "Icon": "71760590403389",
+        "Name": "Spooky Koi Fish",
+        "Tier": 4
+    },
+    {
+        "Icon": "128554473363426",
+        "Name": "Toxic Jellyfish",
+        "Tier": 4
+    },
+    {
+        "Icon": "118840558184490",
+        "Name": "Zombie Shark",
+        "Tier": 7
+    },
+    {
+        "Icon": "92277291116292",
+        "Name": "Baby Pumpkin Shark",
+        "Tier": 3
+    },
+    {
+        "Icon": "128070497580785",
+        "Name": "Dark Pumpkin Appafish",
+        "Tier": 6
+    },
+    {
+        "Icon": "82325364028304",
+        "Name": "Frankenstein Longsnapper",
+        "Tier": 6
+    },
+    {
+        "Icon": "131024392032651",
+        "Name": "Ghost Spiralfish",
+        "Tier": 2
+    },
+    {
+        "Icon": "123289074389407",
+        "Name": "Mossy Vampire Fish",
+        "Tier": 1
+    },
+    {
+        "Icon": "123751784377518",
+        "Name": "Pumpkin Angler Fish",
+        "Tier": 4
+    },
+    {
+        "Icon": "129107539280642",
+        "Name": "Pumpkin Butterfly Fish",
+        "Tier": 2
+    },
+    {
+        "Icon": "112304908829218",
+        "Name": "Pumpkin Carved Shark",
+        "Tier": 5
+    },
+    {
+        "Icon": "128748768092216",
+        "Name": "Pumpkin Hermit Crab",
+        "Tier": 3
+    },
+    {
+        "Icon": "103346973064613",
+        "Name": "Pumpkin Ray",
+        "Tier": 6
+    },
+    {
+        "Icon": "119502983826514",
+        "Name": "Pumpkin StoneTurtle",
+        "Tier": 5
+    },
+    {
+        "Icon": "126789494167977",
+        "Name": "Spooky Peafish",
+        "Tier": 1
+    },
+    {
+        "Icon": "72770544702627",
+        "Name": "Witch Fish",
+        "Tier": 2
+    },
+    {
+        "Icon": "102291521716919",
+        "Name": "Wizard Stingray",
+        "Tier": 5
+    },
+    {
+        "Icon": "110861329686146",
+        "Name": "Zombie Megalodon",
+        "Tier": 7
+    },
+    {
+        "Icon": "93259170550129",
+        "Name": "Candy Corn Eel",
+        "Tier": 2
+    },
+    {
+        "Icon": "76282468756263",
+        "Name": "Ghastly Crab",
+        "Tier": 5
+    },
+    {
+        "Icon": "137125780150376",
+        "Name": "Ghastly Hermit Crab",
+        "Tier": 5
+    },
+    {
+        "Icon": "115062339542534",
+        "Name": "Hammerhead Mummy",
+        "Tier": 6
+    },
+    {
+        "Icon": "113886190969614",
+        "Name": "Bloodmoon Whale",
+        "Tier": 7
+    },
+    {
+        "Icon": "108665275325646",
+        "Name": "Talon Serpent",
+        "Tier": 7
+    },
+    {
+        "Icon": "105102846577855",
+        "Name": "Wild Serpent",
+        "Tier": 7
+    },
+    {
+        "Icon": "121441191255890",
+        "Name": "Witch Koi Fish",
+        "Tier": 3
+    },
+    {
+        "Icon": "127594101212560",
+        "Name": "Wraithfin Abyssal",
+        "Tier": 4
+    },
+    {
+        "Icon": "72248976760148",
+        "Name": "Skeleton Narwhal",
+        "Tier": 7
+    },
+    {
+        "Icon": "124783376175888",
+        "Name": "Wing Parrotfish",
+        "Tier": 2
+    },
+    {
+        "Icon": "113998108351187",
+        "Name": "Traffic Cone Fish",
+        "Tier": 3
+    },
+    {
+        "Icon": "136937049057582",
+        "Name": "Toothy Fish",
+        "Tier": 3
+    },
+    {
+        "Icon": "109016567709360",
+        "Name": "Thinkler Fish",
+        "Tier": 2
+    },
+    {
+        "Icon": "123007215107239",
+        "Name": "Sona Fin Fish",
+        "Tier": 1
+    },
+    {
+        "Icon": "115338077693444",
+        "Name": "Sea Crustacean",
+        "Tier": 6
+    },
+    {
+        "Icon": "76096764311236",
+        "Name": "Runic Squid",
+        "Tier": 6
+    },
+    {
+        "Icon": "78787372617743",
+        "Name": "Runic Sea Crustacean",
+        "Tier": 6
+    },
+    {
+        "Icon": "75142053727355",
+        "Name": "Runic Lobster",
+        "Tier": 5
+    },
+    {
+        "Icon": "77334109072314",
+        "Name": "Runic Axolotl",
+        "Tier": 5
+    },
+    {
+        "Icon": "119189756405143",
+        "Name": "Purp Blisfish",
+        "Tier": 1
+    },
+    {
+        "Icon": "102375471622278",
+        "Name": "Primordial Octopus",
+        "Tier": 6
+    },
+    {
+        "Icon": "134352063604414",
+        "Name": "Primal Lobster",
+        "Tier": 5
+    },
+    {
+        "Icon": "127892490832450",
+        "Name": "Primal Axolotl",
+        "Tier": 5
+    },
+    {
+        "Icon": "136311954875874",
+        "Name": "Pirate Blue Lobster",
+        "Tier": 3
+    },
+    {
+        "Icon": "93808950497100",
+        "Name": "Night Glider Fish",
+        "Tier": 1
+    },
+    {
+        "Icon": "100769354091343",
+        "Name": "Lunar Crescent Fish",
+        "Tier": 3
+    },
+    {
+        "Icon": "122543032863960",
+        "Name": "Liar Nose Fish",
+        "Tier": 3
+    },
+    {
+        "Icon": "126602140465429",
+        "Name": "1x1x1x1 Shark",
+        "Tier": 7
+    },
+    {
+        "Icon": "131785277053113",
+        "Name": "Gladiator Shark",
+        "Tier": 7
+    },
+    {
+        "Icon": "115020830553781",
+        "Name": "Foxtrot Koanfish",
+        "Tier": 2
+    },
+    {
+        "Icon": "95113752323029",
+        "Name": "Fossilized Shark",
+        "Tier": 6
+    },
+    {
+        "Icon": "89252022082531",
+        "Name": "Flying Manta",
+        "Tier": 5
+    },
+    {
+        "Icon": "73809550216371",
+        "Name": "Flatheaded Whale Shark",
+        "Tier": 6
+    },
+    {
+        "Icon": "104826665812171",
+        "Name": "Doober Fish",
+        "Tier": 2
+    },
+    {
+        "Icon": "124798847622372",
+        "Name": "Dogfish",
+        "Tier": 4
+    },
+    {
+        "Icon": "110427632040144",
+        "Name": "Cavern Dweller",
+        "Tier": 6
+    },
+    {
+        "Icon": "85394749821305",
+        "Name": "Boney Eel",
+        "Tier": 3
+    },
+    {
+        "Icon": "78472043782085",
+        "Name": "Blobby Shieldfish",
+        "Tier": 4
+    },
+    {
+        "Icon": "100664684321181",
+        "Name": "Baby Shrimp",
+        "Tier": 2
+    },
+    {
+        "Icon": "135099762730215",
+        "Name": "Angrylion Fish",
+        "Tier": 4
+    },
+    {
+        "Icon": "103962641004338",
+        "Name": "Ancient Squid",
+        "Tier": 6
+    },
+    {
+        "Icon": "94080226439959",
+        "Name": "Ancient Pufferfish",
+        "Tier": 5
+    },
+    {
+        "Icon": "133381366802339",
+        "Name": "Freshwater Piranha",
+        "Tier": 3
+    },
+    {
+        "Icon": "129918689550932",
+        "Name": "Plasma Serpent",
+        "Tier": 6
+    },
+    {
+        "Icon": "107008051913908",
+        "Name": "Cryoshade Glider",
+        "Tier": 7
+    },
+    {
+        "Icon": "132585714096538",
+        "Name": "Starlight Manta Ray",
+        "Tier": 6
+    },
+    {
+        "Icon": "116185409462303",
+        "Name": "Starlight Crab",
+        "Tier": 4
+    },
+    {
+        "Icon": "118232728651933",
+        "Name": "Parrot Blopfish",
+        "Tier": 3
+    },
+    {
+        "Icon": "138551053618250",
+        "Name": "Green Gillfish",
+        "Tier": 2
+    },
+    {
+        "Icon": "120326003916500",
+        "Name": "Cypress Ratua",
+        "Tier": 2
+    },
+    {
+        "Icon": "137098484897071",
+        "Name": "Fish Fossil",
+        "Tier": 5
+    },
+    {
+        "Icon": "122228140520012",
+        "Name": "Glacierfin Snapper",
+        "Tier": 2
+    },
+    {
+        "Icon": "110265016364630",
+        "Name": "Curious Garfish",
+        "Tier": 2
+    },
+    {
+        "Icon": "118826363919078",
+        "Name": "Iron Domefin",
+        "Tier": 4
+    },
+    {
+        "Icon": "101240566251348",
+        "Name": "Cute Octopus",
+        "Tier": 3
+    },
+    {
+        "Icon": "138330943047773",
+        "Name": "Freshwater Piranha",
+        "Tier": 3
+    },
+    {
+        "Icon": "96235449127344",
+        "Name": "Coral",
+        "Tier": 1
+    },
+    {
+        "Icon": "87304583998131",
+        "Name": "Boltback Fish",
+        "Tier": 2
+    },
+    {
+        "Icon": "96450948294793",
+        "Name": "Sophisticated Angler",
+        "Tier": 2
+    },
+    {
+        "Icon": "94221709472146",
+        "Name": "Smarty Mcfish",
+        "Tier": 2
+    },
+    {
+        "Icon": "92527448781061",
+        "Name": "Depthseeker Ray",
+        "Tier": 7
+    },
+    {
+        "Icon": "140293601164118",
+        "Name": "Yellow Spinefin",
+        "Tier": 2
+    },
+    {
+        "Icon": "87213487175221",
+        "Name": "ElRetro Gran Maja",
+        "Tier": 7
+    },
+    {
+        "Icon": "122211520622139",
+        "Name": "Violet Divafish",
+        "Tier": 1
+    },
+    {
+        "Icon": "106185428761933",
+        "Name": "Turqoi Backfin",
+        "Tier": 2
+    },
+    {
+        "Icon": "80655916696311",
+        "Name": "Tree Frog",
+        "Tier": 3
+    },
+    {
+        "Icon": "111686486825787",
+        "Name": "Trav Grupper",
+        "Tier": 5
+    },
+    {
+        "Icon": "137910385069866",
+        "Name": "Studded Jellyfish",
+        "Tier": 5
+    },
+    {
+        "Icon": "118480628740391",
+        "Name": "Studded Dolphin",
+        "Tier": 4
+    },
+    {
+        "Icon": "74650607758460",
+        "Name": "Steelfin Marlin",
+        "Tier": 3
+    },
+    {
+        "Icon": "85086243829526",
+        "Name": "Starry Night Shark",
+        "Tier": 6
+    },
+    {
+        "Icon": "101611169865190",
+        "Name": "Shedletsky Guppy",
+        "Tier": 4
+    },
+    {
+        "Icon": "86938160716648",
+        "Name": "Retro Crocodile",
+        "Tier": 5
+    },
+    {
+        "Icon": "124695608237391",
+        "Name": "Purple Razorback",
+        "Tier": 2
+    },
+    {
+        "Icon": "104139252072812",
+        "Name": "Lumina Stinger",
+        "Tier": 5
+    },
+    {
+        "Icon": "140112807282792",
+        "Name": "Leaf Fin",
+        "Tier": 1
+    },
+    {
+        "Icon": "122152368670912",
+        "Name": "Lady Luminelle",
+        "Tier": 2
+    },
+    {
+        "Icon": "70479460586644",
+        "Name": "Happy Sunfish",
+        "Tier": 2
+    },
+    {
+        "Icon": "120585557484652",
+        "Name": "Gumball Whale",
+        "Tier": 3
+    },
+    {
+        "Icon": "108835728416359",
+        "Name": "Guest Guppy",
+        "Tier": 3
+    },
+    {
+        "Icon": "111356644977460",
+        "Name": "Grumpy Angler",
+        "Tier": 3
+    },
+    {
+        "Icon": "136615659816850",
+        "Name": "Frostbreaker Whale",
+        "Tier": 6
+    },
+    {
+        "Icon": "137153575325442",
+        "Name": "Friendly Lobster",
+        "Tier": 4
+    },
+    {
+        "Icon": "100202738318932",
+        "Name": "Enchanted Turtle",
+        "Tier": 4
+    },
+    {
+        "Icon": "107539230294032",
+        "Name": "King Frog",
+        "Tier": 4
+    },
+    {
+        "Icon": "81180761060405",
+        "Name": "Disco Party Puffer",
+        "Tier": 4
+    },
+    {
+        "Icon": "84052975001558",
+        "Name": "Cousin Tentacles",
+        "Tier": 5
+    },
+    {
+        "Icon": "101426127102104",
+        "Name": "Classic Goldfish",
+        "Tier": 1
+    },
+    {
+        "Icon": "108600494137652",
+        "Name": "Classic Dorhey Tang",
+        "Tier": 2
+    },
+    {
+        "Icon": "116353079150728",
+        "Name": "Classic Angler",
+        "Tier": 4
+    },
+    {
+        "Icon": "136380956166771",
+        "Name": "Cantelope Puffer",
+        "Tier": 2
+    },
+    {
+        "Icon": "115945392034086",
+        "Name": "Builderman Guppy",
+        "Tier": 3
+    },
+    {
+        "Icon": "84533446308508",
+        "Name": "Brighteyes Guppy",
+        "Tier": 4
+    },
+    {
+        "Icon": "123712872087272",
+        "Name": "Boned Arrowhead Fish",
+        "Tier": 1
+    },
+    {
+        "Icon": "97862084509972",
+        "Name": "Blue Shell Crab",
+        "Tier": 5
+    },
+    {
+        "Icon": "114941091584027",
+        "Name": "Blocky Octopus",
+        "Tier": 4
+    },
+    {
+        "Icon": "136270282783680",
+        "Name": "Blockmine Fish",
+        "Tier": 2
+    },
+    {
+        "Icon": "124410297821349",
+        "Name": "Block Fish",
+        "Tier": 4
+    },
+    {
+        "Icon": "99523992488689",
+        "Name": "Beach Ball",
+        "Tier": 2
+    },
+    {
+        "Icon": "86379985934607",
+        "Name": "Angry Rocky",
+        "Tier": 2
+    },
+    {
+        "Icon": "132304105842168",
+        "Name": "Ancient Crawler",
+        "Tier": 3
+    },
+    {
+        "Icon": "104195278889702",
+        "Name": "Alienhead Squid",
+        "Tier": 3
+    },
+    {
+        "Icon": "128407329321611",
+        "Name": "Winged Seahorse",
+        "Tier": 5
+    },
+    {
+        "Icon": "105627026733261",
+        "Name": "Void Eel",
+        "Tier": 2
+    },
+    {
+        "Icon": "97968657298649",
+        "Name": "Tralalero Tralala",
+        "Tier": 6
+    },
+    {
+        "Icon": "98046606623336",
+        "Name": "1x1x1x1 Comet Shark",
+        "Tier": 7
+    },
+    {
+        "Icon": "109855518365678",
+        "Name": "Swirl Crab Cake",
+        "Tier": 3
+    },
+    {
+        "Icon": "123420550559333",
+        "Name": "Balloon Shrimp",
+        "Tier": 5
+    },
+    {
+        "Icon": "74624545968974",
+        "Name": "Cake Turtle",
+        "Tier": 4
+    },
+    {
+        "Icon": "104081643218472",
+        "Name": "Cherry Spearfish",
+        "Tier": 5
+    },
+    {
+        "Icon": "107899892527842",
+        "Name": "King Swirl Pufferfish",
+        "Tier": 3
+    },
+    {
+        "Icon": "79239447210148",
+        "Name": "Pinata Crab",
+        "Tier": 6
+    },
+    {
+        "Icon": "130031021475406",
+        "Name": "Pinata Squid",
+        "Tier": 6
+    },
+    {
+        "Icon": "78704641378838",
+        "Name": "Sprinkle Fish",
+        "Tier": 1
+    },
+    {
+        "Icon": "74211359073674",
+        "Name": "Sprinkle Wrinkfish",
+        "Tier": 1
+    },
+    {
+        "Icon": "113501574324315",
+        "Name": "Strawberry Choc Megalodon",
+        "Tier": 7
+    },
+    {
+        "Icon": "130329311287920",
+        "Name": "Winter Sweater Redfin",
+        "Tier": 2
+    },
+    {
+        "Icon": "110689311505585",
+        "Name": "Bowtie Blobby",
+        "Tier": 2
+    },
+    {
+        "Icon": "121122529050682",
+        "Name": "Chill Santa Fish",
+        "Tier": 2
+    },
+    {
+        "Icon": "122388564298702",
+        "Name": "Christmas Light Carp",
+        "Tier": 3
+    },
+    {
+        "Icon": "132653247906739",
+        "Name": "Christmas Wreath Fish",
+        "Tier": 2
+    },
+    {
+        "Icon": "87582231890415",
+        "Name": "Christmas Penguin",
+        "Tier": 5
+    },
+    {
+        "Icon": "139745082927999",
+        "Name": "Classy Snowfish",
+        "Tier": 4
+    },
+    {
+        "Icon": "132774419130197",
+        "Name": "Cozy Carp",
+        "Tier": 1
+    },
+    {
+        "Icon": "117646921482495",
+        "Name": "Cozy Narwhal Plushie",
+        "Tier": 4
+    },
+    {
+        "Icon": "95908307780956",
+        "Name": "Reindeer Shark",
+        "Tier": 5
+    },
+    {
+        "Icon": "77578943978639",
+        "Name": "Emerald Winter Whale",
+        "Tier": 7
+    },
+    {
+        "Icon": "96025025127295",
+        "Name": "Festive Dolphin",
+        "Tier": 6
+    },
+    {
+        "Icon": "98863294850018",
+        "Name": "Festive Salmon",
+        "Tier": 2
+    },
+    {
+        "Icon": "79509762574483",
+        "Name": "Finny Present",
+        "Tier": 3
+    },
+    {
+        "Icon": "132376823616816",
+        "Name": "Frostglow Globe Jelly",
+        "Tier": 6
+    },
+    {
+        "Icon": "80795854998731",
+        "Name": "Frostshell Turtle",
+        "Tier": 6
+    },
+    {
+        "Icon": "136600108047064",
+        "Name": "Frozen Tundra",
+        "Tier": 5
+    },
+    {
+        "Icon": "130640778639349",
+        "Name": "Giftback Turtle",
+        "Tier": 5
+    },
+    {
+        "Icon": "92296707133735",
+        "Name": "Gingerbread Crab",
+        "Tier": 4
+    },
+    {
+        "Icon": "110944928864756",
+        "Name": "Gingerbread Fish",
+        "Tier": 2
+    },
+    {
+        "Icon": "92678728390683",
+        "Name": "Gingerbread Fish Plushie",
+        "Tier": 3
+    },
+    {
+        "Icon": "90964398913552",
+        "Name": "Gingerbread Ray",
+        "Tier": 4
+    },
+    {
+        "Icon": "88054860956615",
+        "Name": "Gingerbread Starfish",
+        "Tier": 2
+    },
+    {
+        "Icon": "90857756348654",
+        "Name": "Tree Horse",
+        "Tier": 5
+    },
+    {
+        "Icon": "99433203082902",
+        "Name": "Holiday Angler Plushie",
+        "Tier": 4
+    },
+    {
+        "Icon": "84693185102777",
+        "Name": "Holiday Guppy Plushie",
+        "Tier": 2
+    },
+    {
+        "Icon": "83698764554591",
+        "Name": "Holiday Turtle Plushie",
+        "Tier": 3
+    },
+    {
+        "Icon": "99785253108310",
+        "Name": "Icecap Runner",
+        "Tier": 1
+    },
+    {
+        "Icon": "83067274799369",
+        "Name": "Icefang Angler",
+        "Tier": 3
+    },
+    {
+        "Icon": "97342738307335",
+        "Name": "Icey Pufferfish",
+        "Tier": 1
+    },
+    {
+        "Icon": "102456497850746",
+        "Name": "Jingle Bells Fish",
+        "Tier": 2
+    },
+    {
+        "Icon": "124821998713212",
+        "Name": "Jinglefin",
+        "Tier": 3
+    },
+    {
+        "Icon": "115170038244650",
+        "Name": "Jolly Crab",
+        "Tier": 3
+    },
+    {
+        "Icon": "81299133203453",
+        "Name": "Mistle Toe Fish",
+        "Tier": 2
+    },
+    {
+        "Icon": "110200770931944",
+        "Name": "Mistle Toe Seahorse",
+        "Tier": 2
+    },
+    {
+        "Icon": "80397032880659",
+        "Name": "Northfin Helper",
+        "Tier": 2
+    },
+    {
+        "Icon": "118902735725181",
+        "Name": "Nutcracker Ray",
+        "Tier": 6
+    },
+    {
+        "Icon": "130846686202060",
+        "Name": "Ornament Fish",
+        "Tier": 2
+    },
+    {
+        "Icon": "73482487150090",
+        "Name": "Peppermint Fish",
+        "Tier": 3
+    },
+    {
+        "Icon": "114444131086313",
+        "Name": "Peppermint Spike",
+        "Tier": 4
+    },
+    {
+        "Icon": "102458993571761",
+        "Name": "Reindeer Fish",
+        "Tier": 1
+    },
+    {
+        "Icon": "122702020337713",
+        "Name": "Snowflake Puffer Fish",
+        "Tier": 2
+    },
+    {
+        "Icon": "109991774351095",
+        "Name": "Santa Guppy",
+        "Tier": 1
+    },
+    {
+        "Icon": "118970369559126",
+        "Name": "Reindeer Guppy",
+        "Tier": 1
+    },
+    {
+        "Icon": "133353931522765",
+        "Name": "Goofy Santa Fish",
+        "Tier": 1
+    },
+    {
+        "Icon": "103222096258239",
+        "Name": "Elf Guppy",
+        "Tier": 1
+    },
+    {
+        "Icon": "90833088805438",
+        "Name": "Krampus Shark",
+        "Tier": 7
+    },
+    {
+        "Icon": "139526906837161",
+        "Name": "Winter Frost Shark",
+        "Tier": 7
+    },
+    {
+        "Icon": "71622364014615",
+        "Name": "Icebreaker Whale",
+        "Tier": 7
+    },
+    {
+        "Icon": "75570847254834",
+        "Name": "Frost Crab",
+        "Tier": 5
+    },
+    {
+        "Icon": "97987635166000",
+        "Name": "Frostbite Bluefinn",
+        "Tier": 5
+    },
+    {
+        "Icon": "133233732766081",
+        "Name": "Frostfin",
+        "Tier": 2
+    },
+    {
+        "Icon": "134479103632927",
+        "Name": "Frostveil Ray",
+        "Tier": 6
+    },
+    {
+        "Icon": "90675310008949",
+        "Name": "Frostwhisker",
+        "Tier": 3
+    },
+    {
+        "Icon": "127220528752397",
+        "Name": "Frozen ClownFish",
+        "Tier": 2
+    },
+    {
+        "Icon": "115162562192398",
+        "Name": "Frozen Tang",
+        "Tier": 1
+    },
+    {
+        "Icon": "113770781807048",
+        "Name": "Glacier Bass",
+        "Tier": 4
+    },
+    {
+        "Icon": "136583285905378",
+        "Name": "Icy Depths Koi",
+        "Tier": 3
+    },
+    {
+        "Icon": "126013378974703",
+        "Name": "Icy Fish",
+        "Tier": 1
+    },
+    {
+        "Icon": "130389891586520",
+        "Name": "Icy Swordfish",
+        "Tier": 6
+    },
+    {
+        "Icon": "110522990742358",
+        "Name": "New Years Axolotl",
+        "Tier": 5
+    },
+    {
+        "Name": "New Years Clownfish",
+        "Tier": 1
+    },
+    {
+        "Icon": "128946229965957",
+        "Name": "New Years Goby",
+        "Tier": 1
+    },
+    {
+        "Icon": "98277317073958",
+        "Name": "New Years Grouper",
+        "Tier": 4
+    },
+    {
+        "Icon": "71461794246684",
+        "Name": "New Years Jellyfish",
+        "Tier": 4
+    },
+    {
+        "Icon": "115840071206005",
+        "Name": "New Years Lobster",
+        "Tier": 5
+    },
+    {
+        "Icon": "73170460081382",
+        "Name": "New Years Pufferfish",
+        "Tier": 4
+    },
+    {
+        "Icon": "122801983044947",
+        "Name": "New Years Whale Shark",
+        "Tier": 6
+    },
+    {
+        "Icon": "107865223529285",
+        "Name": "New Years Seahorse",
+        "Tier": 6
+    },
+    {
+        "Icon": "105040588668498",
+        "Name": "Starry Night Whale",
+        "Tier": 7
+    },
+    {
+        "Icon": "79620961723730",
+        "Name": "Rippleveil",
+        "Tier": 2
+    },
+    {
+        "Icon": "84761253891494",
+        "Name": "Banditfish",
+        "Tier": 4
+    },
+    {
+        "Icon": "108392787810428",
+        "Name": "Zebra Striped Fish",
+        "Tier": 3
+    },
+    {
+        "Icon": "131801581184236",
+        "Name": "Vineback Pike",
+        "Tier": 3
+    },
+    {
+        "Icon": "75399599804303",
+        "Name": "Treasure Crab",
+        "Tier": 5
+    },
+    {
+        "Icon": "109319227434849",
+        "Name": "Sunstripe Reef Fish",
+        "Tier": 2
+    },
+    {
+        "Icon": "119065599143204",
+        "Name": "Sunband Fish",
+        "Tier": 1
+    },
+    {
+        "Icon": "117077087662698",
+        "Name": "Striped Beakfish",
+        "Tier": 1
+    },
+    {
+        "Icon": "130209506953010",
+        "Name": "Starry Nights Sawfish",
+        "Tier": 6
+    },
+    {
+        "Icon": "106535208218960",
+        "Name": "Pirate Starfish",
+        "Tier": 4
+    },
+    {
+        "Icon": "99359624247790",
+        "Name": "Spotted Grouper",
+        "Tier": 3
+    },
+    {
+        "Icon": "127161842149006",
+        "Name": "Solarflare Koi",
+        "Tier": 6
+    },
+    {
+        "Icon": "100663120681182",
+        "Name": "Scarrock Mudfish",
+        "Tier": 3
+    },
+    {
+        "Icon": "127659478133561",
+        "Name": "Sailor's Bluefish",
+        "Tier": 2
+    },
+    {
+        "Icon": "107482197651147",
+        "Name": "Sailor Crab",
+        "Tier": 5
+    },
+    {
+        "Icon": "118553508806655",
+        "Name": "Black Tide Shrimp",
+        "Tier": 5
+    },
+    {
+        "Icon": "123269201591757",
+        "Name": "Blue Dumbo",
+        "Tier": 5
+    },
+    {
+        "Icon": "111859394471567",
+        "Name": "Blueface Sunfish",
+        "Tier": 1
+    },
+    {
+        "Icon": "103089232636826",
+        "Name": "Captain Pufferfish",
+        "Tier": 5
+    },
+    {
+        "Icon": "105362745763927",
+        "Name": "Clay Reef Fish",
+        "Tier": 2
+    },
+    {
+        "Icon": "112094341423425",
+        "Name": "Cutlass Runner",
+        "Tier": 4
+    },
+    {
+        "Icon": "133553385743159",
+        "Name": "Goblin Shark",
+        "Tier": 6
+    },
+    {
+        "Icon": "124988655997715",
+        "Name": "Guttenfang",
+        "Tier": 5
+    },
+    {
+        "Icon": "118396011749978",
+        "Name": "Komodo Dragon",
+        "Tier": 6
+    },
+    {
+        "Icon": "87335348974574",
+        "Name": "Scaly Parrot Fish",
+        "Tier": 3
+    },
+    {
+        "Icon": "117430572619627",
+        "Name": "Petalfish",
+        "Tier": 4
+    },
+    {
+        "Icon": "88389653058386",
+        "Name": "Pika Pika Dumbo",
+        "Tier": 5
+    },
+    {
+        "Icon": "71719427391544",
+        "Name": "Pink Dumbo",
+        "Tier": 5
+    },
+    {
+        "Icon": "79280677320555",
+        "Name": "Pirate Dreadfin",
+        "Tier": 4
+    },
+    {
+        "Icon": "122080743642505",
+        "Name": "Pirate Sailfish",
+        "Tier": 6
+    },
+    {
+        "Icon": "111717850876602",
+        "Name": "Pirate Megalodon",
+        "Tier": 7
+    },
+    {
+        "Icon": "113832020723299",
+        "Name": "Reef Bluefish",
+        "Tier": 1
+    },
+    {
+        "Icon": "130460287820380",
+        "Name": "Reef Minnow",
+        "Tier": 2
+    },
+    {
+        "Icon": "121794505904244",
+        "Name": "Leviathan",
+        "Tier": 7
+    },
+    {
+        "Icon": "88584771745160",
+        "Name": "Cursed Kraken",
+        "Tier": 7
+    },
+    {
+        "Icon": "96750512492708",
+        "Name": "Voidlight Deepfish",
+        "Tier": 4
+    },
+    {
+        "Icon": "119969620866795",
+        "Name": "Abyr Squid",
+        "Tier": 7
+    },
+    {
+        "Icon": "139389336483330",
+        "Name": "Amethyst Snapper",
+        "Tier": 3
+    },
+    {
+        "Icon": "115522251824285",
+        "Name": "Bioluminescent Manta Ray",
+        "Tier": 6
+    },
+    {
+        "Icon": "80885775494243",
+        "Name": "Biolumiscent Octopus",
+        "Tier": 5
+    },
+    {
+        "Icon": "92800563957185",
+        "Name": "Blossom Jelly",
+        "Tier": 5
+    },
+    {
+        "Icon": "87051285933726",
+        "Name": "Blue Sea Dragon",
+        "Tier": 5
+    },
+    {
+        "Icon": "87608465060683",
+        "Name": "Brinehead Fish",
+        "Tier": 1
+    },
+    {
+        "Icon": "112088257164749",
+        "Name": "Crystal Pufferfish",
+        "Tier": 4
+    },
+    {
+        "Icon": "121632552320211",
+        "Name": "Cute Dumbo",
+        "Tier": 5
+    },
+    {
+        "Icon": "85959912866300",
+        "Name": "Emberfin Pike",
+        "Tier": 3
+    },
+    {
+        "Icon": "121635072528545",
+        "Name": "Flying Cavern Fish",
+        "Tier": 2
+    },
+    {
+        "Icon": "78757139553667",
+        "Name": "Glowspore Toad",
+        "Tier": 4
+    },
+    {
+        "Icon": "130977959152162",
+        "Name": "Moonfish",
+        "Tier": 2
+    },
+    {
+        "Icon": "95930371032141",
+        "Name": "Nebble Fish",
+        "Tier": 1
+    },
+    {
+        "Icon": "93082721738870",
+        "Name": "Offshore Herald",
+        "Tier": 4
+    },
+    {
+        "Icon": "99636978605725",
+        "Name": "Rainy Dumbo",
+        "Tier": 2
+    },
+    {
+        "Icon": "113400641461947",
+        "Name": "Sapphyra",
+        "Tier": 4
+    },
+    {
+        "Icon": "109552379312250",
+        "Name": "Slipstream Fish",
+        "Tier": 1
+    },
+    {
+        "Icon": "78210102976480",
+        "Name": "Spine Eel",
+        "Tier": 3
+    },
+    {
+        "Icon": "82799561265013",
+        "Name": "Star Snail",
+        "Tier": 5
+    },
+    {
+        "Icon": "76708167349930",
+        "Name": "Stonebelly Fish",
+        "Tier": 2
+    },
+    {
+        "Icon": "115845796153708",
+        "Name": "Stormy Dumbo",
+        "Tier": 2
+    }
+]
