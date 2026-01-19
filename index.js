@@ -48,6 +48,9 @@ Object.entries(scripts).forEach(([route, file]) => {
     app.get(route, (req, res) => serveTextFile(file, res));
 });
 
+app.get('/bg.png', (req, res) => serveFile('db/bg.png', res, 'image/png'));
+app.get('/icon.png', (req, res) => serveFile('db/icon.png', res, 'image/png'));
+
 app.get('/mt-manager', (req, res) => {
     const filePath = path.resolve(__dirname, 'apk/MT-Manager.apk');
     res.download(filePath, 'ArtHub-Manager.apk', (err) => {
