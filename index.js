@@ -51,8 +51,8 @@ app.get('/fish', (req, res) => {
     serveTextFile('script/dbfish', req, res);
 });
 
-app.get('/v2', (req, res) => {
-    serveTextFile('script/v2', req, res);
+app.get('/UI', (req, res) => {
+    serveTextFile('UI/Lib', req, res);
 });
 
 app.get('/v3', (req, res) => {
