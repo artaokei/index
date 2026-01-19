@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { readFile } from 'fs/promises';
+import fs from 'fs';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,7 +19,7 @@ async function serveScript(relativePath, res) {
         res.setHeader('Content-Type', 'text/plain');
         res.send(content);
     } catch (error) {
-        res.status(404).send('File tidak ditemukan');
+        res.status(404).send(`File tidak ditemukan: ${relativePath}`);
     }
 }
 
@@ -34,21 +35,23 @@ app.get('/av4abyn4e', (req, res) => serveScript('script/av4abyn4e', res));
 app.get('/blatant', (req, res) => serveScript('script/blatant', res));
 app.get('/dbfish', (req, res) => serveScript('db/fish', res));
 
-app.get('/bg.png', (req, res) => {
-    res.sendFile(path.join(__dirname, 'db/bg.png'));
-});
-
-app.get('/icon.png', (req, res) => {
-    res.sendFile(path.join(__dirname, 'db/icon.png'));
-});
+app.get('/bg.png', (req, res) => res.sendFile(path.join(__dirname, 'db/bg.png')));
+app.get('/icon.png', (req, res) => res.sendFile(path.join(__dirname, 'db/icon.png')));
 
 app.get('/mt-manager', (req, res) => {
-    const filePath = path.join(__dirname, 'apk/MT-Manager.apk');
-    res.download(filePath, 'ArtHub-Manager.apk');
+    res.download(path.join(__dirname, 'apk/MT-Manager.apk'), 'ArtHub-Manager.apk');
+});
+
+app.get('/check-files', (req, res) => {
+    const folders = ['UI', 'script', 'db', 'apk'];
+    let report = {};
+    folders.forEach(f => {
+        const p = path.join(__dirname, f);
+        report[f] = fs.existsSync(p) ? fs.readdirSync(p) : 'FOLDER TIDAK ADA';
+    });
+    res.json({ __dirname, report });
 });
 
 export default app;
 
-app.listen(PORT, () => {
-    console.log(`Server on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server on ${PORT}`));
