@@ -2,7 +2,6 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { readFile } from 'fs/promises';
-import fs from 'fs';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -28,28 +27,19 @@ app.get('/dc/arthub', (req, res) => res.redirect('https://discord.gg/js4nA59uBS'
 
 app.get('/fishit', (req, res) => serveScript('script/fishit', res));
 app.get('/fish', (req, res) => serveScript('script/dbfish', res));
+app.get('/dbfish', (req, res) => serveScript('db/fish', res));
 app.get('/ui', (req, res) => serveScript('UI/Lib', res));
 app.get('/UI', (req, res) => serveScript('UI/Lib', res));
 app.get('/v3', (req, res) => serveScript('script/v3graeg', res));
+app.get('/v2erv', (req, res) => serveScript('script/v2erv', res));
 app.get('/av4abyn4e', (req, res) => serveScript('script/av4abyn4e', res));
 app.get('/blatant', (req, res) => serveScript('script/blatant', res));
-app.get('/dbfish', (req, res) => serveScript('db/fish', res));
 
 app.get('/bg.png', (req, res) => res.sendFile(path.join(__dirname, 'db/bg.png')));
-app.get('/icon.png', (req, res) => res.sendFile(path.join(__dirname, 'db/icon.png')));
+app.get('/icon.png', (req, res) => res.sendFile(path.join(__dirname, 'db/logo.png')));
 
 app.get('/mt-manager', (req, res) => {
     res.download(path.join(__dirname, 'apk/MT-Manager.apk'), 'ArtHub-Manager.apk');
-});
-
-app.get('/check-files', (req, res) => {
-    const folders = ['UI', 'script', 'db', 'apk'];
-    let report = {};
-    folders.forEach(f => {
-        const p = path.join(__dirname, f);
-        report[f] = fs.existsSync(p) ? fs.readdirSync(p) : 'FOLDER TIDAK ADA';
-    });
-    res.json({ __dirname, report });
 });
 
 export default app;
