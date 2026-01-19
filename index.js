@@ -5,92 +5,62 @@ import { readFile, access } from 'fs/promises';
 import { constants } from 'fs';
 
 const app = express();
-const port = 3000;
+const PORT = process.env.PORT || 3000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.use(express.json());
-
 app.use(express.static(path.join(__dirname, 'views')));
 app.use('/script', express.static(path.join(__dirname, 'script')));
 
-async function serveTextFile(relativePath, req, res) {
+async function serveTextFile(relativePath, res) {
     const filePath = path.join(__dirname, relativePath);
-
     try {
-        await access(filePath, constants.R_OK); 
-        
+        await access(filePath, constants.R_OK);
         const fileContent = await readFile(filePath, 'utf8');
-
         res.setHeader('Content-Type', 'text/plain');
         res.send(fileContent);
-
     } catch (error) {
         if (error.code === 'ENOENT') {
             res.status(404).send('File not found');
         } else {
-            console.error(`Error reading file at ${relativePath}:`, error);
-            res.status(500).send('Error reading file content');
+            res.status(500).send('Internal Server Error');
         }
     }
 }
 
-app.get('/dc/uncle', (req, res) => {
-    res.redirect(302, 'https://discord.gg/funqNPfemD');
-});
-app.get('/dc/arthub', (req, res) => {
-    res.redirect(302, 'https://discord.gg/js4nA59uBS');
-});
+const redirects = {
+    '/dc/uncle': 'https://discord.gg/funqNPfemD',
+    '/dc/arthub': 'https://discord.gg/js4nA59uBS'
+};
 
-app.get('/fishit', (req, res) => {
-    serveTextFile('script/fishit', req, res);
+Object.entries(redirects).forEach(([route, url]) => {
+    app.get(route, (req, res) => res.redirect(302, url));
 });
 
-app.get('/fish', (req, res) => {
-    serveTextFile('script/dbfish', req, res);
+const scripts = {
+    '/fishit': 'script/fishit',
+    '/fish': 'script/dbfish',
+    '/UI': 'UI/Lib',
+    '/v3': 'script/v3',
+    '/av4abyn4e': 'script/av4abyn4e',
+    '/blatant': 'script/blatant'
+};
+
+Object.entries(scripts).forEach(([route, file]) => {
+    app.get(route, (req, res) => serveTextFile(file, res));
 });
-
-app.get('/UI', (req, res) => {
-    serveTextFile('UI/Lib', req, res);
-});
-
-app.get('/v3', (req, res) => {
-    serveTextFile('script/v3', req, res);
-})
-
-app.get('/av4abyn4e', (req, res) => {
-    serveTextFile('script/av4abyn4e', req, res);
-})
-
-app.get('/blatant', (req, res) => {
-    serveTextFile('script/blatant', req, res);
-});
-
 
 app.get('/mt-manager', (req, res) => {
-    // 1. Tentukan lokasi file APK kamu
     const filePath = path.join(__dirname, 'apk', 'MT-Manager.apk');
-    
-    // 2. Tentukan nama file saat nanti muncul di HP/PC user (opsional)
-    const fileName = 'ArtHub-Manager.apk';
-
-    // 3. Gunakan fungsi res.download
-    res.download(filePath, fileName, (err) => {
-        if (err) {
-            console.error("Gagal mendownload file:", err);
-            // Beri tahu user jika file tidak ada atau error
-            if (!res.headersSent) {
-                res.status(404).send('Maaf, file aplikasi tidak ditemukan.');
-            }
+    res.download(filePath, 'ArtHub-Manager.apk', (err) => {
+        if (err && !res.headersSent) {
+            res.status(404).send('File tidak ditemukan.');
         }
     });
 });
 
-// app.get('/', (req, res) => {
-//     res.sendFile(path.join(__dirname, 'views', 'index.html'));
-// });
-
-app.listen(port, () => {
-    console.log(`Server berjalan di http://localhost:${port}`);
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
