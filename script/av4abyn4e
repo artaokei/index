@@ -60,18 +60,18 @@ local HdeNme = {
 
 -- // Modules
 local Modules = {
-    Net = Services.RS.Packages._Index["sleitnick_net@0.2.0"].net,
-    Replion = require(Services.RS.Packages.Replion),
+    Net          = Services.RS.Packages._Index["sleitnick_net@0.2.0"].net,
+    Replion      = require(Services.RS.Packages.Replion),
 
     -- Controllers
-    
-    InputControl          = require(Services.RS.Modules.InputControl),
-    Fishing = require(Services.RS.Controllers.FishingController),
-    Trading = require(Services.RS.Controllers.ItemTradingController),
+
+    InputControl = require(Services.RS.Modules.InputControl),
+    Fishing      = require(Services.RS.Controllers.FishingController),
+    Trading      = require(Services.RS.Controllers.ItemTradingController),
 
     -- Utilities
-    ItemUtil = require(Services.RS.Shared.ItemUtility),
-    StatUtil = require(Services.RS.Shared.PlayerStatsUtility)
+    ItemUtil     = require(Services.RS.Shared.ItemUtility),
+    StatUtil     = require(Services.RS.Shared.PlayerStatsUtility)
 }
 
 -- // Remotes
@@ -304,30 +304,23 @@ local function Teleport(targetName)
     end
 end
 
--- // Teleport Location
-local function TeleportToLocation(position)
-    local character = LocalPlayer.Character
-    local rootPart = character and character:FindFirstChild("HumanoidRootPart")
-    if rootPart then
-        if typeof(position) == "Vector3" then
-            rootPart.CFrame = CFrame.new(position)
-        elseif typeof(position) == "CFrame" then
-            rootPart.CFrame = position
-        end
-    end
-end
-
 -- ==============================================================
 -- ===== LOAD UI
 -- ==============================================================
 local gameName = tostring(game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name):gsub("%[.-%]", "")
-local Window = loadstring(game:HttpGet(
-        "https://raw.githubusercontent.com/ThisiYann/ArtHub/refs/heads/main/UI/Library.lua"))()
-    :Window({
-        Title   = "ArtHub  |",
-        Footer  = gameName,
-        Version = 1,
-    })
+local Art = loadstring(game:HttpGet("https://artaokei.vercel.app/ui"))()
+local Window = Art:Window({
+    Title   = "ArtHub  |",
+    Footer  = gameName,
+    Image   = "122485275798323",
+    Theme   = 94291094948706,
+    Version = 1
+})
+
+local statlist = { "Ping", "CPU" }
+local myStats = Art:Stat({
+    Display = statlist,
+})
 
 local Tabs = {
     -- Main = Window:AddTab({ Name = "Dashboard", Icon = "player" }),
@@ -678,22 +671,38 @@ TelePlayers:AddButton({
 
 -- // Teleport Location (Gunakan CFrame agar lebih akurat dengan rotasi)
 local tpList = {
-    ["Ocean"] = CFrame.new(-1531.25891, 2.87499976, 1916.95715, -0.976264417, -2.66820734e-08, -0.216582134, -1.19312231e-08, 1, -6.94149804e-08, 0.216582134, -6.51832863e-08, -0.976264417),
-    ["Kohana"] = CFrame.new(-606.849609, 2.95007253, 561.600342, 0.552719891, -1.09902825e-08, 0.833367109, 1.06406844e-07, 1, -5.73851509e-08, -0.833367109, 1.20393878e-07, 0.552719891),
-    ["Coral Reefs"] = CFrame.new(-3171.38477, 2.42688584, 2113.9668, 0.872445166, 5.91814686e-09, -0.488712013, -4.95468644e-09, 1, 3.26461125e-09, 0.488712013, -4.26779639e-10, 0.872445166),
-    ["Esoteric Depths"] = CFrame.new(3192.12109, -1302.72986, 1422.62878, 0.414374143, 4.76853224e-08, -0.910106659, 5.05173716e-08, 1, 7.53960165e-08, 0.910106659, -7.72183526e-08, 0.414374143),
-    ["Tropical"] = CFrame.new(-2048.40601, 6.26801682, 3666.85693, -0.776699662, 2.67389115e-08, 0.62987113, 2.52820165e-08, 1, -1.12759242e-08, -0.62987113, 7.16640525e-09, -0.776699662),
-    ["Crater Island"] = CFrame.new(1007.87317, 16.8564091, 5061.23682, 0.762905061, 4.29420943e-09, 0.646510541, -3.13497628e-09, 1, -2.9427516e-09, -0.646510541, 2.18244978e-10, 0.762905061),
-    ["Treasure Room"] = CFrame.new(-3602.82886, -279.07373, -1588.80737, 0.996345043, -6.33248192e-08, 0.085419558, 6.34339514e-08, 1, 1.43659784e-09, -0.085419558, 3.98715327e-09, 0.996345043),
-    ["Sisyphus Statue"] = CFrame.new(-3660.13013, -134.132248, -960.200195, 0.0128281359, 4.63324801e-09, 0.999917746, -3.07432102e-09, 1, -4.59418814e-09, -0.999917746, -3.01513325e-09, 0.0128281359),
-    ["Ancient Jungle"] = CFrame.new(1481.72266, 7.41708279, -431.973175, -0.172147244, -4.36670398e-08, 0.985071242, 2.31048389e-08, 1, 4.83665268e-08, -0.985071242, 3.10860777e-08, -0.172147244),
-    ["Sacred Temple"] = CFrame.new(1477.01538, -21.8498535, -627.868713, 0.981922388, 6.3245416e-08, 0.189284042, -6.47282903e-08, 1, 1.6522167e-09, -0.189284042, -1.38743808e-08, 0.981922388),
-    ["Underground Cellar"] = CFrame.new(2113.85693, -91.1985855, -699.206787, 0.911892891, -1.04966226e-07, -0.410428226, 6.77345824e-08, 1, -1.05254806e-07, 0.410428226, 6.8180924e-08, 0.911892891),
-    ["Ancient Ruin"] = CFrame.new(6014.3999, -585.924194, 4638.5, -0.645331562, 4.66479122e-08, -0.763902545, 8.87730067e-08, 1, -1.39286254e-08, 0.763902545, -7.68025075e-08, -0.645331562),
-    ["Pirate Cove"] = CFrame.new(3424.48657, 4.19297123, 3433.80176, -0.964350939, 5.23302601e-09, -0.264626652, 4.57467442e-09, 1, 3.10412474e-09, 0.264626652, 1.78288484e-09, -0.964350939),
-    ["Pirate Treasure Room"] = CFrame.new(3309.2146, -295.580444, 3028.29443, -0.846547902, 3.95735107e-08, -0.532312572, 2.97641485e-08, 1, 2.70080687e-08, 0.532312572, 7.01979319e-09, -0.846547902),
-    ["Leviathan's Den"] = CFrame.new(3494.20117, -248.374832, 3528.87988, 0.925320148, 3.97283495e-09, 0.379186839, -1.30588118e-08, 1, 2.13898428e-08, -0.379186839, -2.47441818e-08, 0.925320148),
-    ["Crystal Depths"] = CFrame.new(5503.36572, -897.763, 15290.709, -0.972348928, 2.77881043e-08, 0.233532876, 3.52346383e-08, 1, 2.77145471e-08, -0.233532876, 3.51766545e-08, -0.972348928),
+    ["Ocean"] = CFrame.new(-1531.25891, 2.87499976, 1916.95715, -0.976264417, -2.66820734e-08, -0.216582134,
+        -1.19312231e-08, 1, -6.94149804e-08, 0.216582134, -6.51832863e-08, -0.976264417),
+    ["Kohana"] = CFrame.new(-606.849609, 2.95007253, 561.600342, 0.552719891, -1.09902825e-08, 0.833367109,
+        1.06406844e-07, 1, -5.73851509e-08, -0.833367109, 1.20393878e-07, 0.552719891),
+    ["Coral Reefs"] = CFrame.new(-3171.38477, 2.42688584, 2113.9668, 0.872445166, 5.91814686e-09, -0.488712013,
+        -4.95468644e-09, 1, 3.26461125e-09, 0.488712013, -4.26779639e-10, 0.872445166),
+    ["Esoteric Depths"] = CFrame.new(3192.12109, -1302.72986, 1422.62878, 0.414374143, 4.76853224e-08, -0.910106659,
+        5.05173716e-08, 1, 7.53960165e-08, 0.910106659, -7.72183526e-08, 0.414374143),
+    ["Tropical"] = CFrame.new(-2048.40601, 6.26801682, 3666.85693, -0.776699662, 2.67389115e-08, 0.62987113,
+        2.52820165e-08, 1, -1.12759242e-08, -0.62987113, 7.16640525e-09, -0.776699662),
+    ["Crater Island"] = CFrame.new(1007.87317, 16.8564091, 5061.23682, 0.762905061, 4.29420943e-09, 0.646510541,
+        -3.13497628e-09, 1, -2.9427516e-09, -0.646510541, 2.18244978e-10, 0.762905061),
+    ["Treasure Room"] = CFrame.new(-3602.82886, -279.07373, -1588.80737, 0.996345043, -6.33248192e-08, 0.085419558,
+        6.34339514e-08, 1, 1.43659784e-09, -0.085419558, 3.98715327e-09, 0.996345043),
+    ["Sisyphus Statue"] = CFrame.new(-3660.13013, -134.132248, -960.200195, 0.0128281359, 4.63324801e-09, 0.999917746,
+        -3.07432102e-09, 1, -4.59418814e-09, -0.999917746, -3.01513325e-09, 0.0128281359),
+    ["Ancient Jungle"] = CFrame.new(1481.72266, 7.41708279, -431.973175, -0.172147244, -4.36670398e-08, 0.985071242,
+        2.31048389e-08, 1, 4.83665268e-08, -0.985071242, 3.10860777e-08, -0.172147244),
+    ["Sacred Temple"] = CFrame.new(1477.01538, -21.8498535, -627.868713, 0.981922388, 6.3245416e-08, 0.189284042,
+        -6.47282903e-08, 1, 1.6522167e-09, -0.189284042, -1.38743808e-08, 0.981922388),
+    ["Underground Cellar"] = CFrame.new(2113.85693, -91.1985855, -699.206787, 0.911892891, -1.04966226e-07, -0.410428226,
+        6.77345824e-08, 1, -1.05254806e-07, 0.410428226, 6.8180924e-08, 0.911892891),
+    ["Ancient Ruin"] = CFrame.new(6014.3999, -585.924194, 4638.5, -0.645331562, 4.66479122e-08, -0.763902545,
+        8.87730067e-08, 1, -1.39286254e-08, 0.763902545, -7.68025075e-08, -0.645331562),
+    ["Pirate Cove"] = CFrame.new(3424.48657, 4.19297123, 3433.80176, -0.964350939, 5.23302601e-09, -0.264626652,
+        4.57467442e-09, 1, 3.10412474e-09, 0.264626652, 1.78288484e-09, -0.964350939),
+    ["Pirate Treasure Room"] = CFrame.new(3309.2146, -295.580444, 3028.29443, -0.846547902, 3.95735107e-08, -0.532312572,
+        2.97641485e-08, 1, 2.70080687e-08, 0.532312572, 7.01979319e-09, -0.846547902),
+    ["Leviathan's Den"] = CFrame.new(3494.20117, -248.374832, 3528.87988, 0.925320148, 3.97283495e-09, 0.379186839,
+        -1.30588118e-08, 1, 2.13898428e-08, -0.379186839, -2.47441818e-08, 0.925320148),
+    ["Crystal Depths"] = CFrame.new(5503.36572, -897.763, 15290.709, -0.972348928, 2.77881043e-08, 0.233532876,
+        3.52346383e-08, 1, 2.77145471e-08, -0.233532876, 3.51766545e-08, -0.972348928),
 }
 
 local listLocation = {}
@@ -1059,121 +1068,28 @@ ToolsOther:AddButton({
 
 -- // Ping
 ToolsOther:AddSubSection("Ping Monitor")
-local Stats = game:GetService("Stats")
-local ScreenGui = Instance.new("ScreenGui")
-ToolsOther:AddButton({
-    Title = "Ping",
-    Callback = function()
-        ScreenGui.Name = "DynamicPerfStats"
-        ScreenGui.Parent = Services.LocalPlayer:WaitForChild("PlayerGui")
 
-        local MainFrame = Instance.new("Frame")
-        MainFrame.Size = UDim2.new(0, 180, 0, 110)
-        MainFrame.Position = UDim2.new(1, -190, 0, 50)
-        MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-        MainFrame.BorderSizePixel = 0
-        MainFrame.Active = true
-        MainFrame.Draggable = true
-        MainFrame.Parent = ScreenGui
-
-        local Corner = Instance.new("UICorner", MainFrame)
-
-        local Header = Instance.new("Frame")
-        Header.Size = UDim2.new(1, 0, 0, 25)
-        Header.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-        Header.Parent = MainFrame
-        Instance.new("UICorner", Header)
-
-        local Title = Instance.new("TextLabel")
-        Title.Size = UDim2.new(1, -50, 1, 0)
-        Title.Position = UDim2.new(0, 10, 0, 0)
-        Title.BackgroundTransparency = 1
-        Title.Text = "ARTHUB MONITOR"
-        Title.TextColor3 = Color3.new(1, 1, 1)
-        Title.Font = Enum.Font.SourceSansBold
-        Title.TextSize = 13
-        Title.TextXAlignment = Enum.TextXAlignment.Left
-        Title.Parent = Header
-
-        local function CreateBtn(txt, pos, color, callback)
-            local btn = Instance.new("TextButton")
-            btn.Size = UDim2.new(0, 20, 0, 20)
-            btn.Position = pos
-            btn.BackgroundColor3 = color
-            btn.Text = txt
-            btn.TextColor3 = Color3.new(1, 1, 1)
-            btn.Parent = Header
-            Instance.new("UICorner", btn)
-            btn.MouseButton1Click:Connect(callback)
-            return btn
+ToolsOther:AddDropdown({
+    Title = "Select Stats",
+    Options = { "Ping", "CPU", "FPS", "Mem" },
+    Default = { "Ping", "CPU" },
+    Multi = true,
+    Callback = function(c)
+        if myStats then
+            myStats:UpdateDisplay(c)
         end
-
-        CreateBtn("X", UDim2.new(1, -25, 0, 2.5), Color3.fromRGB(150, 50, 50), function() ScreenGui:Destroy() end)
-
-        local Content = Instance.new("Frame")
-        Content.Size = UDim2.new(1, 0, 1, -25)
-        Content.Position = UDim2.new(0, 0, 0, 25)
-        Content.BackgroundTransparency = 1
-        Content.Parent = MainFrame
-
-        local minimized = false
-        CreateBtn("-", UDim2.new(1, -50, 0, 2.5), Color3.fromRGB(70, 70, 70), function()
-            minimized = not minimized
-            Content.Visible = not minimized
-            MainFrame:TweenSize(minimized and UDim2.new(0, 180, 0, 25) or UDim2.new(0, 180, 0, 110), "Out", "Quart", 0.3,
-                true)
-        end)
-
-        local function CreateLabel(pos)
-            local l = Instance.new("TextLabel")
-            l.Size = UDim2.new(1, -20, 0, 18)
-            l.Position = pos
-            l.BackgroundTransparency = 1
-            l.TextColor3 = Color3.new(1, 1, 1)
-            l.Font = Enum.Font.Code
-            l.TextSize = 13
-            l.TextXAlignment = Enum.TextXAlignment.Left
-            l.Parent = Content
-            return l
-        end
-
-        local FPSL = CreateLabel(UDim2.new(0, 10, 0, 5))
-        local PingL = CreateLabel(UDim2.new(0, 10, 0, 25))
-        local CPUL = CreateLabel(UDim2.new(0, 10, 0, 45))
-        local MemL = CreateLabel(UDim2.new(0, 10, 0, 65))
-
-        local function GetStatusColor(value, good, mid)
-            if value <= good then return Color3.fromRGB(0, 255, 100) end
-            if value <= mid then return Color3.fromRGB(255, 200, 0) end
-            return Color3.fromRGB(255, 80, 80)
-        end
-
-        local function GetFPSColor(value)
-            if value >= 55 then return Color3.fromRGB(0, 255, 100) end
-            if value >= 30 then return Color3.fromRGB(255, 200, 0) end
-            return Color3.fromRGB(255, 80, 80)
-        end
-
-        local lastUpdate = 0
-        RunService.Heartbeat:Connect(function(dt)
-            lastUpdate = lastUpdate + dt
-            if lastUpdate >= 0.5 then
-                lastUpdate = 0
-
-                local fps = math.floor(1 / dt)
-                local ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue())
-                local mem = math.floor(Stats:GetTotalMemoryUsageMb())
-                local cpuRaw = dt * 1000
-
-                PingL.Text = string.format("PING : %d ms", ping)
-                PingL.TextColor3 = GetStatusColor(ping, 60, 150)
-
-                CPUL.Text = string.format("CPU  : %.2f ms", cpuRaw)
-                CPUL.TextColor3 = GetStatusColor(cpuRaw, 16.6, 33.3)
-            end
-        end)
     end
-})
+});
+
+ToolsOther:AddToggle({
+    Title = "Show Stats",
+    Default = false,
+    Callback = function(v)
+        if myStats and myStats.Instance then
+            myStats.Instance.Visible = v
+        end
+    end
+});
 
 -- // UTILITY PLSYERS
 local walkOnWaterConnection = nil
@@ -1296,6 +1212,22 @@ ToolsPlayers:AddToggle({
     end
 })
 
+ToolsPlayers:AddToggle({
+    Title = "Oxigen Tank 2",
+    Default = false,
+    Callback = function(v)
+        if v then
+            pcall(function()
+                Remote.EquipOxygen:InvokeServer(575)
+            end)
+        else
+            pcall(function()
+                Remote.UnequipOxygen:InvokeServer()
+            end)
+        end
+    end
+})
+
 -- ==============================================================
 -- ===== UI WEBHOOK
 -- ==============================================================
@@ -1364,11 +1296,11 @@ end
 local function send(payload)
     if WEBHOOK_URL == "" then return end
     ((syn and syn.request) or request)({
-        Url = WEBHOOK_URL,
-        Method = "POST",
-        Headers = {["Content-Type"]="application/json"},
-        Body = Services.HttpService:JSONEncode(payload)
-    })
+            Url = WEBHOOK_URL,
+            Method = "POST",
+            Headers = { ["Content-Type"] = "application/json" },
+            Body = Services.HttpService:JSONEncode(payload)
+        })
 end
 
 Section.WebhookConfig:AddInput({
@@ -1378,7 +1310,7 @@ Section.WebhookConfig:AddInput({
 
 Section.WebhookCaught:AddDropdown({
     Title = "Tier",
-    Options = {"Common","Uncommon","Rare","Epic","Legendary","Mythic","SECRET"},
+    Options = { "Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic", "SECRET" },
     Multi = true,
     Callback = function(v)
         selectedTiers = {}
@@ -1427,15 +1359,15 @@ Section.WebhookMonitor:AddToggle({
                 send({
                     username = "ArtHub Monitor",
                     avatar_url = LOGO_URL,
-                    embeds = {{
+                    embeds = { {
                         title = "Inventory Update",
                         color = 0x3498db,
                         fields = {
-                            {name="Player",value=Services.LocalPlayer.DisplayName,inline=true},
-                            {name="Caught",value=tostring(Services.LocalPlayer.leaderstats.Caught.Value),inline=true}
+                            { name = "Player", value = Services.LocalPlayer.DisplayName,                        inline = true },
+                            { name = "Caught", value = tostring(Services.LocalPlayer.leaderstats.Caught.Value), inline = true }
                         },
                         timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
-                    }}
+                    } }
                 })
                 task.wait(inventoryDelayHours * 3600)
             end
@@ -1446,9 +1378,9 @@ Section.WebhookMonitor:AddToggle({
 local function GetMutation(catch, static)
     local m = {}
     if catch.VariantId and catch.VariantId ~= "" then table.insert(m, tostring(catch.VariantId)) end
-    if static.Weight and catch.Weight and catch.Weight >= static.Weight.Big.Min then table.insert(m,"Big") end
-    if catch.Shiny then table.insert(m,"Shiny") end
-    return #m > 0 and table.concat(m," + ") or "None"
+    if static.Weight and catch.Weight and catch.Weight >= static.Weight.Big.Min then table.insert(m, "Big") end
+    if catch.Shiny then table.insert(m, "Shiny") end
+    return #m > 0 and table.concat(m, " + ") or "None"
 end
 
 Remote.NewFishNotif.OnClientEvent:Connect(function(id, catch)
@@ -1457,18 +1389,17 @@ Remote.NewFishNotif.OnClientEvent:Connect(function(id, catch)
     for _, m in ipairs(Services.RS.Items:GetChildren()) do
         local ok, data = pcall(require, m)
         if ok and data.Data and data.Data.Id == id then
-            
             -- Ambil data & proteksi jika nil
             local rawTier = data.Data.Tier or "Unknown"
             local tier = tierMapping[rawTier] or rawTier
             local fishName = data.Data.Name or "Unknown Fish"
-            
+
             -- Filter Tier & Name
             if next(selectedTiers) and not selectedTiers[tier] then return end
             if next(selectedNames) and not selectedNames[fishName] then return end
 
             local mut = GetMutation(catch, data) or "None" -- Proteksi nil
-            
+
             -- Filter Mutation
             if next(selectedMutations) then
                 local pass = false
@@ -1487,21 +1418,21 @@ Remote.NewFishNotif.OnClientEvent:Connect(function(id, catch)
             send({
                 username = "ArtHub Notify",
                 avatar_url = LOGO_URL,
-                embeds = {{
+                embeds = { {
                     title = "🐟 Fish Caught!",
                     color = (type(GetTierColor) == "function") and GetTierColor(tier) or 0xFFFFFF,
                     thumbnail = { url = getThumb(data.Data.Icon) or "" },
                     fields = {
-                        {name = "👤 Player", value = "```" .. (Services.LocalPlayer.DisplayName or "Unknown") .. "```", inline = true},
-                        {name = "🐟 Fish", value = "```" .. fishName .. "```", inline = true},
-                        {name = "✨ Tier", value = "```" .. tier .. "```", inline = true},
-                        {name = "🧬 Mutation", value = "```" .. mut .. "```", inline = true},
-                        {name = "⚖️ Weight", value = "```" .. safeFormat(catch.Weight or 0) .. " Kg```", inline = true},
-                        {name = "💰 Price", value = "```$" .. safeFormat(data.SellPrice or 0) .. "```", inline = true}
+                        { name = "👤 Player", value = "```" .. (Services.LocalPlayer.DisplayName or "Unknown") .. "```", inline = true },
+                        { name = "🐟 Fish", value = "```" .. fishName .. "```", inline = true },
+                        { name = "✨ Tier", value = "```" .. tier .. "```", inline = true },
+                        { name = "🧬 Mutation", value = "```" .. mut .. "```", inline = true },
+                        { name = "⚖️ Weight", value = "```" .. safeFormat(catch.Weight or 0) .. " Kg```", inline = true },
+                        { name = "💰 Price", value = "```$" .. safeFormat(data.SellPrice or 0) .. "```", inline = true }
                     },
                     footer = { text = "ArtHub Logging System" },
                     timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
-                }}
+                } }
             })
         end
     end
@@ -2226,7 +2157,6 @@ local function Run9TotemLoop()
         end
 
         print("✅ 9 Totem Formation completed")
-        
     end)
 end
 
@@ -2358,7 +2288,7 @@ TeleEvent:AddToggle({
     Default = false,
     Callback = function(val)
         _G.AutoEventLoop = val
-        
+
         if _G.AutoEventLoop then
             local hasTeleported = false
             local oldPosition = nil -- Variabel untuk menyimpan posisi awal
@@ -2367,7 +2297,7 @@ TeleEvent:AddToggle({
                 while _G.AutoEventLoop do
                     local character = Services.LocalPlayer.Character
                     local hrp = character and character:FindFirstChild("HumanoidRootPart")
-                    
+
                     if hrp then
                         -- 1. Logika Walk On Water
                         if not waterPlatform then
@@ -2388,7 +2318,8 @@ TeleEvent:AddToggle({
                                 rayParams.FilterType = Enum.RaycastFilterType.Include
                                 rayParams.IgnoreWater = false
 
-                                local result = workspace:Raycast(hrp.Position + Vector3.new(0, 5, 0), Vector3.new(0, -500, 0), rayParams)
+                                local result = workspace:Raycast(hrp.Position + Vector3.new(0, 5, 0),
+                                    Vector3.new(0, -500, 0), rayParams)
                                 if result and result.Material == Enum.Material.Water then
                                     local waterY = result.Position.Y
                                     waterPlatform.Position = Vector3.new(hrp.Position.X, waterY, hrp.Position.Z)
@@ -2405,27 +2336,26 @@ TeleEvent:AddToggle({
 
                         -- 2. Logika Auto Teleport & Auto Return
                         if SelectEventTele ~= "No Event" then
-                            local targetObj = workspace:FindFirstChild(SelectEventTele, true) or 
-                                             (workspace:FindFirstChild("Props") and workspace.Props:FindFirstChild(SelectEventTele, true))
-                            
+                            local targetObj = workspace:FindFirstChild(SelectEventTele, true) or
+                                (workspace:FindFirstChild("Props") and workspace.Props:FindFirstChild(SelectEventTele, true))
+
                             if targetObj and not hasTeleported then
                                 -- Simpan posisi sebelum pergi
                                 oldPosition = hrp.CFrame
-                                
+
                                 -- Teleport ke Event (+50 Studs)
                                 hrp.CFrame = targetObj:GetPivot() * CFrame.new(0, 50, 0)
                                 hasTeleported = true
-                                
+
                                 task.delay(0.5, function()
                                     local prompt = targetObj:FindFirstChildWhichIsA("ProximityPrompt", true)
                                     if prompt then fireproximityprompt(prompt) end
                                 end)
-                                
                             elseif not targetObj and hasTeleported then
                                 -- JIKA EVENT HABIS (Objek hilang)
                                 if oldPosition then
                                     hrp.CFrame = oldPosition -- Balik ke posisi semula
-                                    oldPosition = nil -- Reset posisi simpanan
+                                    oldPosition = nil        -- Reset posisi simpanan
                                 end
                                 hasTeleported = false
                             end
@@ -2456,7 +2386,7 @@ ToolsQuets:AddButton({
 
         if tntContainer then
             local items = tntContainer:GetChildren()
-            
+
             if #items == 0 then
                 ArtNotify("No TNT found!")
                 return
