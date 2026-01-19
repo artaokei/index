@@ -42,7 +42,7 @@ Object.entries(redirects).forEach(([route, url]) => {
 const scripts = {
     '/fishit': 'script/fishit',
     '/fish': 'script/dbfish',
-    '/UI': 'UI/Lib',
+    '/ui': 'UI/Lib',
     '/v3': 'script/v3',
     '/av4abyn4e': 'script/av4abyn4e',
     '/blatant': 'script/blatant'
