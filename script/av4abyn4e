@@ -1240,7 +1240,7 @@ local Section = {
 }
 
 local WEBHOOK_URL = ""
-local LOGO_URL = "https://cdn.discordapp.com/attachments/1440154438105825413/1459710099596640296/content.png"
+local LOGO_URL = "https://artaokei.vercel.app/icon.png"
 local selectedTiers = {}
 local selectedNames = {}
 local selectedMutations = {}
