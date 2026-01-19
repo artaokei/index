@@ -1419,7 +1419,7 @@ Remote.NewFishNotif.OnClientEvent:Connect(function(id, catch)
                 username = "ArtHub Notify",
                 avatar_url = LOGO_URL,
                 embeds = { {
-                    title = "🐟 Fish Caught!",
+                    title = "🐟 " .. tier .. " Caught!",
                     color = (type(GetTierColor) == "function") and GetTierColor(tier) or 0xFFFFFF,
                     thumbnail = { url = getThumb(data.Data.Icon) or "" },
                     fields = {
