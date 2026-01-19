@@ -15,18 +15,25 @@ app.use(express.static(path.join(__dirname, 'views')));
 app.use('/script', express.static(path.join(__dirname, 'script')));
 
 async function serveTextFile(relativePath, res) {
-    const filePath = path.join(__dirname, relativePath);
-    try {
-        await access(filePath, constants.R_OK);
-        const fileContent = await readFile(filePath, 'utf8');
+    const extensions = ['', '.lua', '.txt'];
+    let fileContent = null;
+
+    for (const ext of extensions) {
+        const filePath = path.join(__dirname, relativePath + ext);
+        try {
+            await access(filePath, constants.R_OK);
+            fileContent = await readFile(filePath, 'utf8');
+            break; 
+        } catch (e) {
+            continue;
+        }
+    }
+
+    if (fileContent) {
         res.setHeader('Content-Type', 'text/plain');
         res.send(fileContent);
-    } catch (error) {
-        if (error.code === 'ENOENT') {
-            res.status(404).send('File not found');
-        } else {
-            res.status(500).send('Internal Server Error');
-        }
+    } else {
+        res.status(404).send(`File tidak ditemukan: ${relativePath}`);
     }
 }
 
@@ -42,7 +49,8 @@ Object.entries(redirects).forEach(([route, url]) => {
 const scripts = {
     '/fishit': 'script/fishit',
     '/fish': 'script/dbfish',
-    '/ui': 'UI/Lib',
+    '/ui': 'UI/Lib', 
+    '/UI': 'UI/Lib',
     '/v3': 'script/v3',
     '/av4abyn4e': 'script/av4abyn4e',
     '/blatant': 'script/blatant'
@@ -56,7 +64,7 @@ app.get('/mt-manager', (req, res) => {
     const filePath = path.join(__dirname, 'apk', 'MT-Manager.apk');
     res.download(filePath, 'ArtHub-Manager.apk', (err) => {
         if (err && !res.headersSent) {
-            res.status(404).send('File tidak ditemukan.');
+            res.status(404).send('File APK tidak ditemukan.');
         }
     });
 });
