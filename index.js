@@ -23,7 +23,7 @@ async function serveScript(relativePath, res) {
 }
 
 app.get('/dc/uncle', (req, res) => res.redirect('https://discord.gg/funqNPfemD'));
-app.get('/dc/arthub', (req, res) => res.redirect('https://discord.gg/js4nA59uBS'));
+app.get('/dc/arthub', (req, res) => res.redirect('https://discord.gg/9jm5aKHZvG'));
 
 app.get('/fishit', (req, res) => serveScript('script/fishit', res));
 app.get('/fish', (req, res) => serveScript('script/dbfish', res));
